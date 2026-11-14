@@ -1,0 +1,264 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   Base Styles
+   ========================================== */
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    font-optical-sizing: auto;
+  }
+
+  /* Tracking is size-specific: display type tightens hard, labels open up. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  h1 {
+    letter-spacing: -0.04em;
+  }
+  h2 {
+    letter-spacing: -0.03em;
+  }
+  h3 {
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    @apply bg-crimson/15 text-crimson;
+  }
+
+  :focus-visible {
+    outline: 2px solid #b00020;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f8f8f6;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.14);
+    border: 3px solid #f8f8f6;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.26);
+  }
+}
+
+/* ==========================================
+   Reusable Component Classes
+   ========================================== */
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8 lg:px-10;
+  }
+
+  /* ---- Type ---------------------------------------------------------- */
+  .eyebrow {
+    @apply font-mono text-[10px] sm:text-[11px] font-medium uppercase tracking-label text-ink-mute;
+  }
+
+  .eyebrow-crimson {
+    @apply font-mono text-[10px] sm:text-[11px] font-semibold uppercase tracking-label text-crimson;
+  }
+
+  .serif-label {
+    @apply font-serif italic text-ink-mute text-lg;
+  }
+
+  .display {
+    @apply font-sans font-normal tracking-display;
+  }
+
+  .num {
+    @apply tabular-nums;
+  }
+
+  /* ---- Surfaces ------------------------------------------------------ */
+  .hairline {
+    @apply border-hair;
+  }
+
+  .card-paper {
+    @apply bg-white border border-hair rounded-2xl;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 18px 48px -28px rgba(0, 0, 0, 0.22);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-hair bg-white px-3 py-1.5 text-[11px] sm:text-xs font-medium text-ink-mute;
+  }
+
+  .chip-mono {
+    @apply font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em];
+  }
+
+  /* ---- Buttons ------------------------------------------------------- */
+  .btn-dark {
+    @apply inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[15px] font-semibold text-white;
+    transition:
+      background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-dark:hover {
+    @apply bg-crimson;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink/25 bg-transparent px-6 py-3.5 text-[15px] font-semibold text-ink;
+    transition:
+      border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-outline:hover {
+    @apply border-ink bg-ink text-white;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 text-[15px] font-semibold text-ink;
+    transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-ghost:hover {
+    @apply text-crimson;
+  }
+
+  /* Arrow nudges on hover — the reference site uses a moving ⇀. */
+  .arrow {
+    @apply inline-block transition-transform duration-300;
+  }
+  .group:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  /* ---- Inputs -------------------------------------------------------- */
+  .field {
+    @apply w-full rounded-xl border border-hair bg-white px-4 py-3 text-[15px] text-ink outline-none;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .field::placeholder {
+    @apply text-ink-faint;
+  }
+  .field:focus {
+    @apply border-crimson;
+    box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.09);
+  }
+
+  /* ---- Rail ---------------------------------------------------------- */
+  .rail-btn {
+    @apply relative flex h-10 w-10 items-center justify-center rounded-xl text-ink-mute;
+    transition:
+      color 200ms ease,
+      background-color 200ms ease;
+  }
+  .rail-btn:hover {
+    @apply bg-black/5 text-ink;
+  }
+  .rail-btn[data-active="true"] {
+    @apply text-crimson;
+  }
+  .rail-btn[data-active="true"]::before {
+    content: "";
+    @apply absolute -left-3 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-crimson;
+  }
+}
+
+/* ==========================================
+   Keyframes
+   ========================================== */
+@keyframes monogram-draw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  42% {
+    stroke-dashoffset: 0;
+  }
+  72% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* The rail mark draws itself, holds, then erases from the other side. */
+.monogram-path {
+  stroke-dasharray: 100;
+  animation: monogram-draw 6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float-y {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* ==========================================
+   Accessibility preferences
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .card-paper,
+  .chip {
+    border-color: rgba(0, 0, 0, 0.6);
+  }
+}
