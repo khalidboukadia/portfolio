@@ -1,38 +1,38 @@
 import React from "react"
 import { FiCode } from "react-icons/fi"
 import Reveal from "../common/Reveal"
-import { capabilityGroups, personalInfo } from "../../data/portfolioData"
+import { useData, useLang } from "../../i18n/LanguageContext"
 
 /**
  * "Parcours & Stack" — the reference site's Journey & Toolkit block:
  * a narrative column on the left, a capability grid on the right.
  */
-const Skills = () => (
+const Skills = () => {
+  const { capabilityGroups, personalInfo } = useData()
+  const { t } = useLang()
+
+  return (
   <section id="skills" className="scroll-mt-20 border-y border-hair bg-white/40 py-24 sm:py-28 lg:py-32">
     <div className="shell grid gap-14 lg:grid-cols-2 lg:gap-20">
       {/* Left — narrative */}
       <div>
         <Reveal>
-          <p className="serif-label">Duonan</p>
+          <p className="serif-label">{t("skillsSerif")}</p>
           <h2 className="display mt-3 text-[2rem] font-bold leading-[1.08] sm:text-[2.6rem]">
-            De la curiosité
+            {t("skillsTitleLine1")}
             <br />
-            au métier.
+            {t("skillsTitleLine2")}
           </h2>
           <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink-mute sm:text-base">
-            Mon parcours n&apos;est pas une ligne droite. Il a été porté par l&apos;envie
-            de relever des défis : construire des applications visuellement soignées
-            avec React, puis creuser des architectures serveur solides avec Node.js
-            et PHP.
+            {t("skillsText")}
           </p>
         </Reveal>
 
         <Reveal delay={0.08}>
           <div className="mt-10 max-w-md rounded-2xl border border-hair bg-white p-6 shadow-[0_18px_48px_-32px_rgba(0,0,0,0.3)]">
-            <p className="eyebrow-crimson mb-3">Échelle &amp; systèmes</p>
+            <p className="eyebrow-crimson mb-3">{t("skillsCardKicker")}</p>
             <p className="text-[15px] leading-relaxed text-ink-mute">
-              Unir la qualité du front-end à la performance du back-end pour livrer
-              des produits complets, de bout en bout.
+              {t("skillsCardText")}
             </p>
           </div>
         </Reveal>
@@ -42,11 +42,10 @@ const Skills = () => (
       <div>
         <Reveal delay={0.06}>
           <h3 className="text-[19px] font-semibold tracking-tight sm:text-[21px]">
-            Capacités &amp; technologies
+            {t("skillsCapsTitle")}
           </h3>
           <p className="mt-3 max-w-md text-[15px] leading-relaxed text-ink-mute">
-            Une stack structurée de langages, frameworks et outils, utilisée pour
-            livrer des systèmes fiables.
+            {t("skillsCapsText")}
           </p>
         </Reveal>
 
@@ -72,14 +71,15 @@ const Skills = () => (
 
         <Reveal delay={0.2}>
           <p className="mt-8 text-[13px] text-ink-faint">
-            Currently building with{" "}
-            <span className="font-semibold text-ink">{personalInfo.name}</span> —{" "}
-            {personalInfo.location}
+            {t("skillsSignature")} {" "}
+            <span className="font-semibold text-ink">{personalInfo.name}</span>{" "}
+            {t("skillsSignatureEnd")} {personalInfo.location}
           </p>
         </Reveal>
       </div>
     </div>
   </section>
-)
+  )
+}
 
 export default Skills

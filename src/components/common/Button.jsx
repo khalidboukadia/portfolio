@@ -1,6 +1,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { spring } from "../../lib/motion"
+import { useLang } from "../../i18n/LanguageContext"
 
 /**
  * Buttons follow the reference site: a solid black pill, an outlined pill,
@@ -16,6 +17,8 @@ const Button = ({
   icon,
   ...props
 }) => {
+  const { isRTL } = useLang()
+
   const classes = {
     dark: "btn-dark",
     outline: "btn-outline",
@@ -26,7 +29,11 @@ const Button = ({
     <>
       {icon && <span className="shrink-0">{icon}</span>}
       <span>{children}</span>
-      {arrow && <span className="arrow">→</span>}
+      {arrow && (
+        <span className="arrow" aria-hidden="true">
+          {isRTL ? "\u2190" : "\u2192"}
+        </span>
+      )}
     </>
   )
 

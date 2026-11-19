@@ -13,10 +13,13 @@ const OrbitRing = ({ items = [], size = 200, className = "", duration = 26 }) =>
   } 0 1 1 ${size - 28} 0 a ${size / 2 - 14} ${size / 2 - 14} 0 1 1 ${-(size - 28)} 0`
 
   return (
-    <div className={`group relative ${className}`} style={{ width: size, height: size }}>
+    // The wrapper stretches to the parent and keeps a square ratio, so the
+    // circular path stays perfectly centred on whatever sits behind it.
+    <div className={`group relative aspect-square w-full ${className}`}>
       <svg
         viewBox={`0 0 ${size} ${size}`}
-        className="h-full w-full animate-[spin_var(--orbit-dur)_linear_infinite] group-hover:[animation-play-state:paused]"
+        preserveAspectRatio="xMidYMid meet"
+        className="absolute inset-0 h-full w-full animate-[spin_var(--orbit-dur)_linear_infinite] group-hover:[animation-play-state:paused]"
         style={{ "--orbit-dur": `${duration}s` }}
         aria-hidden="true"
       >

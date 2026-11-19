@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { motion } from "framer-motion"
-import { FiSend, FiCheckCircle, FiAlertCircle, FiMail, FiPhone, FiMapPin } from "react-icons/fi"
+import { FiSend, FiCheckCircle, FiAlertCircle, FiMail, FiPhone, FiMapPin, FiCopy } from "react-icons/fi"
 import emailjs from "@emailjs/browser"
 import Reveal from "../common/Reveal"
 import Button from "../common/Button"
-import { personalInfo } from "../../data/portfolioData"
+import { useData, useLang } from "../../i18n/LanguageContext"
 import { scrollToElement } from "../../utils/helpers"
 import { spring } from "../../lib/motion"
 
@@ -14,9 +14,22 @@ const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 const Contact = () => {
+  const { personalInfo } = useData()
+  const { t, n } = useLang()
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" })
   const [status, setStatus] = useState(null)
   const [errorMsg, setErrorMsg] = useState("")
+  const [copied, setCopied] = useState(false)
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(personalInfo.email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2200)
+    } catch {
+      setCopied(false)
+    }
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -27,7 +40,7 @@ const Contact = () => {
 
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       setStatus("error")
-      setErrorMsg("Veuillez remplir tous les champs")
+      setErrorMsg(t("formErrorEmpty"))
       return
     }
 
@@ -54,14 +67,21 @@ const Contact = () => {
       setTimeout(() => setStatus(null), 5000)
     } catch (error) {
       setStatus("error")
-      setErrorMsg(error.text || "Erreur d'envoi")
+      setErrorMsg(error.text || t("formErrorSend"))
     }
   }
 
   const contactInfo = [
-    { icon: FiMail, label: "Email", value: personalInfo.email, href: `mailto:${personalInfo.email}` },
-    { icon: FiPhone, label: "Téléphone", value: personalInfo.phone, href: `tel:${personalInfo.phone}` },
-    { icon: FiMapPin, label: "Localisation", value: personalInfo.location },
+    { icon: FiMail, label: t("contactEmail"), value: personalInfo.email, href: `mailto:${personalInfo.email}` },
+    {
+      icon: FiPhone,
+      label: t("contactPhone"),
+      value: personalInfo.phone,
+      href: `tel:${personalInfo.phone}`,
+      // Un numéro de téléphone reste en LTR, sinon le bidi inverse l'ordre.
+      dir: "ltr",
+    },
+    { icon: FiMapPin, label: t("contactLocation"), value: personalInfo.location },
   ]
 
   return (
@@ -70,12 +90,52 @@ const Contact = () => {
       <Reveal>
         <div className="flex flex-col gap-8 border-b border-hair pb-14 md:flex-row md:items-center md:justify-between">
           <p className="max-w-xl text-[1.35rem] leading-snug text-ink sm:text-[1.7rem]">
-            Une idée qui mérite d&apos;exister ? Discutons du périmètre, du budget et
-            des échéances.
+            {t("contactCtaText")}
           </p>
           <Button onClick={() => scrollToElement("contact-form")} arrow>
-            Me contacter
+            {t("contactCta")}
           </Button>
+        </div>
+      </Reveal>
+
+      {/* Ligne « questions, idées ou presse ? » + copie de l'e-mail,
+          telle qu'elle est présentée sur makousb.com */}
+      <Reveal delay={0.04}>
+        <div className="mt-16 flex flex-col gap-6 border-b border-hair pb-10 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
+              {t("contactPressKicker")}
+            </p>
+            <p className="mt-2 font-mono text-[1.25rem] font-bold leading-tight text-ink sm:text-[1.5rem]">
+              {t("contactPressTitle")}
+            </p>
+            <p className="mt-2 text-[14px] text-ink-mute">{t("contactPressLede")}</p>
+          </div>
+
+          <div className="w-full max-w-md">
+            <div className="flex items-stretch border border-hair bg-white">
+              <span
+                dir="ltr"
+                className="flex min-w-0 flex-1 items-center overflow-hidden px-4 py-3.5 font-mono text-[12.5px] text-ink"
+              >
+                {personalInfo.email}
+              </span>
+              <button
+                type="button"
+                onClick={copyEmail}
+                aria-label={copied ? t("contactCopied") : t("contactCopy")}
+                className="flex shrink-0 items-center gap-2 bg-ink px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-white transition-colors duration-200 hover:bg-crimson sm:px-5"
+              >
+                {copied ? <FiCheckCircle className="h-4 w-4" /> : <FiCopy className="h-4 w-4" />}
+                {/* Sur mobile le bouton reste compact (icône seule) pour que
+                    l'adresse e-mail ne soit jamais tronquée. */}
+                <span className="hidden sm:inline">
+                  {copied ? t("contactCopied") : t("contactCopy")}
+                </span>
+              </button>
+            </div>
+            <p className="mt-2.5 text-[12px] text-ink-faint">{t("contactPressFoot")}</p>
+          </div>
         </div>
       </Reveal>
 
@@ -83,13 +143,12 @@ const Contact = () => {
         {/* ---------- Left ---------- */}
         <div>
           <Reveal>
-            <p className="serif-label">Parlons-en</p>
+            <p className="serif-label">{t("contactSerif")}</p>
             <h2 className="display mt-3 text-[2.1rem] font-bold leading-[1.06] sm:text-[2.8rem]">
-              Un projet en tête&nbsp;?
+              {t("contactTitle")}
             </h2>
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink-mute">
-              Je réponds généralement sous 24&nbsp;heures. Une idée claire suffit
-              pour démarrer — on affine le reste ensemble.
+              {t("contactText")}
             </p>
           </Reveal>
 
@@ -105,7 +164,10 @@ const Contact = () => {
                     <span className="block font-mono text-[9.5px] uppercase tracking-[0.16em] text-ink-faint">
                       {info.label}
                     </span>
-                    <span className="mt-0.5 block truncate text-[15px] font-medium text-ink">
+                    <span
+                      dir={info.dir}
+                      className="mt-0.5 block truncate text-[15px] font-medium text-ink"
+                    >
                       {info.value}
                     </span>
                   </span>
@@ -129,7 +191,7 @@ const Contact = () => {
           <Reveal delay={0.2}>
             <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-hair bg-white px-4 py-2.5">
               <span className="h-2 w-2 animate-pulse rounded-full bg-[#059669]" />
-              <span className="text-[13px] text-ink-mute">Disponible pour de nouvelles opportunités</span>
+              <span className="text-[13px] text-ink-mute">{t("contactAvailable")}</span>
             </div>
           </Reveal>
         </div>
@@ -147,7 +209,7 @@ const Contact = () => {
               >
                 <FiCheckCircle className="h-5 w-5 shrink-0 text-[#047857]" />
                 <p className="text-[14px] font-medium text-[#065F46]">
-                  Message envoyé — je vous réponds très vite.
+                  {t("formSuccess")}
                 </p>
               </motion.div>
             )}
@@ -169,7 +231,7 @@ const Contact = () => {
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">
-                    Nom complet
+                    {t("formName")}
                   </label>
                   <input
                     type="text"
@@ -177,14 +239,14 @@ const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Votre nom"
+                    placeholder={t("formNamePlaceholder")}
                     required
                     className="field"
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">
-                    Email
+                    {t("formEmail")}
                   </label>
                   <input
                     type="email"
@@ -192,7 +254,7 @@ const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="vous@email.com"
+                    placeholder={t("formEmailPlaceholder")}
                     required
                     className="field"
                   />
@@ -201,7 +263,7 @@ const Contact = () => {
 
               <div className="mt-5">
                 <label htmlFor="subject" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">
-                  Sujet
+                  {t("formSubject")}
                 </label>
                 <input
                   type="text"
@@ -209,7 +271,7 @@ const Contact = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="Sujet du message"
+                  placeholder={t("formSubjectPlaceholder")}
                   required
                   className="field"
                 />
@@ -217,7 +279,7 @@ const Contact = () => {
 
               <div className="mt-5">
                 <label htmlFor="message" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">
-                  Message
+                  {t("formMessage")}
                 </label>
                 <textarea
                   id="message"
@@ -225,7 +287,7 @@ const Contact = () => {
                   rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Votre message..."
+                  placeholder={t("formMessagePlaceholder")}
                   required
                   className="field resize-none"
                 />
@@ -245,18 +307,18 @@ const Contact = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Envoi...
+                    {t("formSending")}
                   </>
                 ) : (
                   <>
                     <FiSend className="h-4 w-4" />
-                    Envoyer le message
+                    {t("formSend")}
                   </>
                 )}
               </motion.button>
 
               <p className="mt-4 text-center text-[12px] text-ink-faint">
-                Vos informations restent confidentielles.
+                {t("formPrivacy")}
               </p>
             </form>
           </div>

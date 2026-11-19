@@ -240,6 +240,451 @@
   animation: float-y 6s ease-in-out infinite;
 }
 
+
+/* ==========================================
+   Ouverture — reproduite à l'identique de makousb.com
+   (keyframes, durées et délais relevés dans le CSS d'origine)
+   ========================================== */
+.pw {
+  --d: 0s;
+}
+.pw-anim {
+  --d: 1.65s;
+}
+
+/* ---- Écran d'amorçage : noir, logo qui se construit, puis cut net ---- */
+.pw-boot {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  cursor: pointer;
+  animation: pwBootGone 0s linear 2.2s forwards;
+}
+.pw-bars {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+.pw-bars i {
+  background: #111111;
+  transform-origin: top;
+  animation: pwBar 0.45s cubic-bezier(0.7, 0, 0.2, 1) both;
+  margin-right: -1px;
+}
+.pw-bars i:nth-child(1) {
+  animation-delay: 1.4s;
+}
+.pw-bars i:nth-child(2) {
+  animation-delay: 1.46s;
+}
+.pw-bars i:nth-child(3) {
+  animation-delay: 1.52s;
+}
+.pw-bars i:nth-child(4) {
+  animation-delay: 1.58s;
+}
+.pw-bars i:nth-child(5) {
+  animation-delay: 1.58s;
+}
+.pw-bars i:nth-child(6) {
+  animation-delay: 1.52s;
+}
+.pw-bars i:nth-child(7) {
+  animation-delay: 1.46s;
+}
+.pw-bars i:nth-child(8) {
+  animation-delay: 1.4s;
+}
+.pw-boot-in {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  color: #f8f8f6;
+  animation: pwOut 0.2s ease 1.3s both;
+}
+.pw-boot-logo {
+  position: relative;
+  width: min(72vw, 520px);
+  line-height: 0;
+}
+.pw-boot-logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  shape-rendering: crispEdges;
+  color: #f8f8f6;
+}
+.pw-boot-logo--mono {
+  width: min(30vw, 168px);
+}
+.pw-boot-logo .m {
+  animation: pwWipe 0.75s steps(22, end) 0.2s both;
+}
+.pw-boot-logo .cur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.2%;
+  height: 100%;
+  background: #b00020;
+  opacity: 0;
+  animation: pwBCur 0.75s steps(22, end) 0.2s both;
+}
+.pw-boot-logo .g1,
+.pw-boot-logo .g2 {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.pw-boot-logo .g1 {
+  color: #b00020;
+  animation: pwG1 0.4s steps(1, end) 0.98s forwards;
+}
+.pw-boot-logo .g2 {
+  color: #2fd98a;
+  animation: pwG2 0.4s steps(1, end) 0.98s forwards;
+}
+
+.intro-live .pw-nav {
+  animation: pwIn 0.5s ease calc(var(--d) + 0.35s) both;
+}
+.pw-logo-cur {
+  width: max(3.2%, 2px);
+}
+
+/* ---- Mise en scène de la page (mêmes décalages que l'original) ---- */
+.intro-live .pw-logo {
+  animation: pwWipe 0.9s steps(24, end) calc(var(--d) + 0.1s) both;
+}
+.pw-anim .pw-logo svg {
+  animation: none;
+}
+.intro-live .pw-logo-cur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.2%;
+  height: 100%;
+  background: #b00020;
+  opacity: 0;
+  animation: pwCur 1s steps(24, end) calc(var(--d) + 0.1s) both;
+}
+.intro-live .pw-rule {
+  transform-origin: left;
+  animation: pwRule 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.15s) both;
+}
+.intro-live .pw-eye {
+  animation: pwUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.4s) both;
+}
+.intro-live .pw-l1 {
+  animation: pwRise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--d) + 0.5s) both;
+}
+.intro-live .pw-l2 {
+  animation: pwRise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--d) + 0.63s) both;
+}
+.intro-live .pw-lede {
+  animation: pwUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.8s) both;
+}
+.intro-live .pw-actions {
+  animation: pwUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.9s) both;
+}
+.intro-live .pw-loc {
+  animation: pwUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 1s) both;
+}
+.intro-live .pw-stat {
+  animation: pwUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.45s) both;
+}
+.intro-live .pw-strip {
+  animation: pwIn 0.6s ease calc(var(--d) + 0.3s) both;
+}
+.intro-live .pw-term {
+  animation: pwTerm 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--d) + 0.65s) both;
+}
+.intro-live .pw-social {
+  animation: pwIn 0.6s ease calc(var(--d) + 0.8s) both;
+}
+.intro-live .pw-card {
+  animation: pwUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.75s) both;
+}
+.intro-live .pw-card-2 {
+  animation: pwUp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.85s) both;
+}
+.intro-live .pw-fig {
+  animation: pwFigZoom 1.9s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d) + 0.05s) both;
+}
+.intro-live .pw-fig-wipe {
+  animation: pwFigWipe 1.05s cubic-bezier(0.65, 0, 0.15, 1) calc(var(--d) + 0.15s) both;
+}
+.intro-live .pw-fig-scan {
+  animation: pwFigScan 1.05s cubic-bezier(0.65, 0, 0.15, 1) calc(var(--d) + 0.15s) both;
+}
+.intro-live .pw-fig-marks {
+  animation: pwIn 0.6s ease calc(var(--d) + 0.6s) both;
+}
+
+/* ---- Keyframes (recopiés du site d'origine) ---- */
+@keyframes pwBootGone {
+  to {
+    visibility: hidden;
+  }
+}
+@keyframes pwBar {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+@keyframes pwOut {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pwWipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pwBCur {
+  0% {
+    opacity: 1;
+    left: 0;
+  }
+  92% {
+    opacity: 1;
+    left: calc(100% - 9px);
+  }
+  100% {
+    opacity: 0;
+    left: calc(100% - 9px);
+  }
+}
+@keyframes pwCur {
+  0% {
+    opacity: 1;
+    left: 0;
+  }
+  88% {
+    opacity: 1;
+    left: calc(100% - 9px);
+  }
+  100% {
+    opacity: 0;
+    left: calc(100% - 9px);
+  }
+}
+@keyframes pwG1 {
+  0% {
+    opacity: 1;
+    transform: translate(-5px, 0);
+    clip-path: inset(10% 0 55% 0);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(6px, 0);
+    clip-path: inset(55% 0 12% 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-3px, 1px);
+    clip-path: inset(30% 0 30% 0);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(4px, 0);
+    clip-path: inset(0 0 70% 0);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pwG2 {
+  0% {
+    opacity: 1;
+    transform: translate(5px, 0);
+    clip-path: inset(60% 0 5% 0);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-6px, 0);
+    clip-path: inset(8% 0 62% 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(3px, -1px);
+    clip-path: inset(40% 0 25% 0);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-4px, 0);
+    clip-path: inset(72% 0 0 0);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes pwIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pwUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pwRise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes pwTerm {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pwLine {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pwRule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes pwFigWipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pwFigScan {
+  0% {
+    inset-inline-start: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    inset-inline-start: calc(100% - 2px);
+    opacity: 0;
+  }
+}
+@keyframes pwFigZoom {
+  from {
+    transform: scale(1.07);
+  }
+  to {
+    transform: none;
+  }
+}
+
+
+
+/* ==========================================
+   Transition de langue — carrés noirs
+   La vague grandit depuis l'angle haut jusqu'au centre,
+   puis rétrécit vers l'angle opposé.
+   ========================================== */
+/* ==========================================
+   Arabe — typographie, sens de lecture et adaptations RTL
+   ========================================== */
+
+/* Les polices latines n'ont pas de glyphes arabes : on chaîne une police
+   arabe après chaque famille pour que le navigateur bascule tout seul. */
+html[lang="ar"] body,
+html[lang="ar"] .font-sans {
+  font-family: "IBM Plex Sans Arabic", "Plus Jakarta Sans", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+}
+html[lang="ar"] .font-serif {
+  font-family: "Tajawal", "IBM Plex Sans Arabic", "Playfair Display", ui-serif, Georgia, serif;
+}
+html[lang="ar"] .font-mono {
+  font-family: "IBM Plex Sans Arabic", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+html[lang="ar"] .display,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3 {
+  font-family: "Tajawal", "IBM Plex Sans Arabic", "Plus Jakarta Sans", sans-serif;
+}
+
+/* L'espacement des lettres casse la liaison des lettres arabes : on le
+   neutralise partout en mode arabe (les noms latins restent lisibles). */
+html[lang="ar"] body * {
+  letter-spacing: normal !important;
+}
+
+/* La flèche des boutons part du côté du texte. */
+html[dir="rtl"] .group:hover .arrow {
+  transform: translateX(-4px);
+}
+
+/* L'indicateur de section active du rail se pose du côté extérieur. */
+html[dir="rtl"] .rail-btn[data-active="true"]::before {
+  left: auto;
+  right: -0.75rem;
+}
+
+/* Les séparateurs verticaux (divide-x) doivent tomber du bon côté. */
+html[dir="rtl"] .divide-x > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-x-reverse: 1;
+}
+
+/* La figure du hero se révèle depuis le début de la ligne (droite en RTL)
+   et la ligne de scan balaie dans le même sens. */
+html[dir="rtl"] .intro-live .pw-fig-wipe {
+  animation-name: pwFigWipeRtl;
+}
+
+@keyframes pwFigWipeRtl {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 /* ==========================================
    Accessibility preferences
    ========================================== */

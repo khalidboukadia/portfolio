@@ -1,16 +1,21 @@
 import React from "react"
+import { motion } from "framer-motion"
 import { FiMapPin, FiBriefcase, FiBookOpen } from "react-icons/fi"
 import Reveal from "../common/Reveal"
 import SectionHead from "../common/SectionHead"
-import { education, experiences, languages, softSkills } from "../../data/portfolioData"
+import { useData, useLang } from "../../i18n/LanguageContext"
 
-const Journey = () => (
+const Journey = () => {
+  const { education, experiences, languages, softSkills } = useData()
+  const { t, n } = useLang()
+
+  return (
   <section id="experience" className="scroll-mt-20 border-y border-hair bg-white/40 py-24 sm:py-28 lg:py-32">
     <div className="shell">
       <SectionHead
-        kicker="Parcours · Expérience & formation"
-        title="Le chemin parcouru."
-        lede="Un stage en production, une formation continue et beaucoup de projets livrés — c'est ce qui forge un développeur."
+        kicker={t("journeyKicker")}
+        title={t("journeyTitle")}
+        lede={t("journeyLede")}
       />
 
       <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
@@ -19,7 +24,7 @@ const Journey = () => (
           <Reveal>
             <p className="eyebrow mb-6 flex items-center gap-2">
               <FiBriefcase className="h-3.5 w-3.5" />
-              Expérience professionnelle
+              {t("journeyExperience")}
             </p>
           </Reveal>
 
@@ -27,7 +32,7 @@ const Journey = () => (
             <Reveal key={exp.id} delay={index * 0.06}>
               <article className="rounded-2xl border border-hair bg-white p-6 sm:p-8">
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-crimson">
-                  {exp.period}
+                  {n(exp.period)}
                 </p>
                 <h3 className="mt-3 font-serif text-[1.5rem] leading-tight sm:text-[1.75rem]">
                   {exp.role}
@@ -66,7 +71,7 @@ const Journey = () => (
           <Reveal>
             <p className="eyebrow mb-6 flex items-center gap-2">
               <FiBookOpen className="h-3.5 w-3.5" />
-              Formation académique
+              {t("journeyEducation")}
             </p>
           </Reveal>
 
@@ -82,11 +87,11 @@ const Journey = () => (
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-2">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
-                      {edu.period}
+                      {n(edu.period)}
                     </span>
                     {edu.current && (
                       <span className="chip chip-mono border-[#059669]/30 bg-[#059669]/10 text-[#047857]">
-                        En cours
+                        {t("journeyInProgress")}
                       </span>
                     )}
                   </div>
@@ -97,7 +102,7 @@ const Journey = () => (
 
           {/* Soft skills */}
           <Reveal delay={0.12}>
-            <p className="eyebrow mb-4 mt-12">Soft skills</p>
+            <p className="eyebrow mb-4 mt-12">{t("journeySoftSkills")}</p>
             <div className="flex flex-wrap gap-2">
               {softSkills.map((skill) => (
                 <span key={skill} className="chip">
@@ -109,9 +114,9 @@ const Journey = () => (
 
           {/* Languages */}
           <Reveal delay={0.16}>
-            <p className="eyebrow mb-4 mt-12">Langues</p>
+            <p className="eyebrow mb-4 mt-12">{t("journeyLanguages")}</p>
             <div className="space-y-4">
-              {languages.map((lang) => (
+              {languages.map((lang, index) => (
                 <div key={lang.name}>
                   <div className="mb-1.5 flex items-baseline justify-between">
                     <span className="text-[14px] font-medium text-ink">{lang.name}</span>
@@ -119,10 +124,19 @@ const Journey = () => (
                       {lang.level}
                     </span>
                   </div>
+                  {/* La barre se remplit en descendant jusqu'à sa position */}
                   <div className="h-[3px] w-full overflow-hidden rounded-full bg-black/10">
-                    <div
-                      className="h-full rounded-full bg-ink/70"
-                      style={{ width: `${lang.percentage}%` }}
+                    <motion.div
+                      className="h-full origin-start rounded-full bg-ink/70"
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${lang.percentage}%` }}
+                      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+                      transition={{
+                        type: "spring",
+                        duration: 1.1,
+                        bounce: 0,
+                        delay: index * 0.1,
+                      }}
                     />
                   </div>
                 </div>
@@ -133,6 +147,7 @@ const Journey = () => (
       </div>
     </div>
   </section>
-)
+  )
+}
 
 export default Journey

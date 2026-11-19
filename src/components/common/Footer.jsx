@@ -1,28 +1,32 @@
 import React from "react"
 import { FiGithub, FiLinkedin, FiMail, FiPhone, FiArrowUp } from "react-icons/fi"
-import { personalInfo, navLinks } from "../../data/portfolioData"
+import { useData, useLang } from "../../i18n/LanguageContext"
 import { scrollToElement } from "../../utils/helpers"
 
 const Footer = () => {
-  const year = new Date().getFullYear()
+  const { personalInfo, navLinks } = useData()
+  const { t, n, isRTL } = useLang()
+  const year = n(new Date().getFullYear())
 
   const connect = [
     { icon: FiGithub, label: "GitHub", href: personalInfo.github },
     { icon: FiLinkedin, label: "LinkedIn", href: personalInfo.linkedin },
-    { icon: FiMail, label: "Email", href: `mailto:${personalInfo.email}` },
-    { icon: FiPhone, label: "Téléphone", href: `tel:${personalInfo.phone}` },
+    { icon: FiMail, label: t("contactEmail"), href: `mailto:${personalInfo.email}` },
+    { icon: FiPhone, label: t("footerPhone"), href: `tel:${personalInfo.phone}`, dir: "ltr" },
   ]
 
   return (
     <footer className="relative overflow-hidden">
       {/* Support band */}
       <a
-        href={`mailto:${personalInfo.email}?subject=Soutenir%20le%20travail`}
+        href={`mailto:${personalInfo.email}?subject=${encodeURIComponent(t("footerSupportSubject"))}`}
         className="group flex items-center justify-center gap-3 bg-amber py-5 text-[15px] font-semibold text-ink transition-colors duration-300 hover:bg-[#FCD34D]/80"
       >
-        <span>☕</span>
-        <span>Soutenir le travail</span>
-        <span className="arrow">→</span>
+        <span aria-hidden="true">☕</span>
+        <span>{t("footerSupport")}</span>
+        <span className="arrow" aria-hidden="true">
+          {isRTL ? "\u2190" : "\u2192"}
+        </span>
       </a>
 
       <div className="border-t border-hair bg-paper">
@@ -32,16 +36,15 @@ const Footer = () => {
             aria-hidden="true"
             className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 select-none font-serif text-[26vw] italic leading-none text-black/[0.045]"
           >
-            créer.
+            {t("footerWatermark")}
           </span>
 
           <div className="relative grid gap-12 md:grid-cols-3 md:gap-10">
             {/* Brand */}
             <div>
-              <p className="eyebrow-crimson mb-4">Pas de templates. Du code propre.</p>
+              <p className="eyebrow-crimson mb-4">{t("footerTagline")}</p>
               <p className="max-w-xs text-[14px] leading-relaxed text-ink-mute">
-                Développeur full stack passionné par des applications web modernes,
-                lisibles et performantes.
+                {t("footerDesc")}
               </p>
               <a
                 href={`mailto:${personalInfo.email}`}
@@ -52,8 +55,8 @@ const Footer = () => {
             </div>
 
             {/* Index */}
-            <nav aria-label="Index du site">
-              <p className="eyebrow mb-4">Index</p>
+            <nav aria-label={t("ariaIndex")}>
+              <p className="eyebrow mb-4">{t("footerIndex")}</p>
               <ul className="space-y-2.5">
                 {navLinks.map((link) => (
                   <li key={link.name}>
@@ -76,7 +79,7 @@ const Footer = () => {
                     rel="noopener noreferrer"
                     className="text-[14px] text-ink-mute transition-colors duration-200 hover:text-crimson"
                   >
-                    CV
+                    {t("heroCtaGhost")}
                   </a>
                 </li>
               </ul>
@@ -84,7 +87,7 @@ const Footer = () => {
 
             {/* Connect */}
             <div>
-              <p className="eyebrow mb-4">Contact</p>
+              <p className="eyebrow mb-4">{t("footerContact")}</p>
               <ul className="space-y-2.5">
                 {connect.map((item) => {
                   const Icon = item.icon
@@ -94,6 +97,7 @@ const Footer = () => {
                         href={item.href}
                         target={item.href.startsWith("http") ? "_blank" : undefined}
                         rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                        dir={item.dir}
                         className="group inline-flex items-center gap-2 text-[14px] text-ink-mute transition-colors duration-200 hover:text-crimson"
                       >
                         <Icon className="h-3.5 w-3.5" />
@@ -109,11 +113,11 @@ const Footer = () => {
           {/* Bottom bar */}
           <div className="relative mt-14 flex flex-col gap-4 border-t border-hair pt-7 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
-              © {year} {personalInfo.name} — Conçu &amp; développé à {personalInfo.location}
+              © {year} {personalInfo.name} — {t("footerCredit")} {personalInfo.location}
             </p>
             <div className="flex items-center gap-6">
               <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
-                React · Tailwind · Framer Motion
+                {t("footerStack")}
               </span>
               <button
                 type="button"
@@ -121,7 +125,7 @@ const Footer = () => {
                 className="group inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute transition-colors duration-200 hover:text-crimson"
               >
                 <FiArrowUp className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                Haut de page
+                {t("footerTop")}
               </button>
             </div>
           </div>

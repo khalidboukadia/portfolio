@@ -73,7 +73,7 @@ export const socialLinks = [
 /* ==========================================
    Hero
    ========================================== */
-export const heroEyebrow = ["Full-Stack Craft", "Stacks Modernes", "Produits Livrés"]
+export const heroEyebrow = ["Expertise Full-Stack", "Stacks Modernes", "Produits Livrés"]
 
 export const heroStats = [
   { value: 27, suffix: "+", label: "Projets" },
@@ -87,6 +87,7 @@ export const heroStats = [
 export const showcase = [
   {
     id: "daba",
+    projectId: 1,
     title: "DIGITAL DABA",
     subtitle: "CMS e-commerce & back-office",
     description:
@@ -105,6 +106,7 @@ export const showcase = [
   },
   {
     id: "medisync",
+    projectId: 2,
     title: "MediSync",
     subtitle: "Gestion médicale",
     description:
@@ -429,3 +431,25 @@ export const languages = [
   { name: "Français", level: "A2", percentage: 40 },
   { name: "Anglais", level: "A1", percentage: 25 },
 ]
+
+/* ==========================================
+   Export groupé — permet de choisir le jeu de données
+   (français ou arabe) depuis le contexte de langue.
+   ========================================== */
+export default {
+  personalInfo,
+  navLinks,
+  socialLinks,
+  heroEyebrow,
+  heroStats,
+  showcase,
+  beliefs,
+  approach,
+  skillCategories,
+  capabilityGroups,
+  projects,
+  experiences,
+  education,
+  softSkills,
+  languages,
+}

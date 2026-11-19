@@ -90,4 +90,4 @@ Ces variables sont déjà câblées dans le workflow GitHub Pages
 ## Déploiement
 
 Le site est publié automatiquement sur **GitHub Pages** à chaque push sur `main`.
-L'URL suit la forme `https://khalidboukadia.github.io/portfolio/`.
+L'URL suit la forme `https://khalidboukadia.github.io/port/`.

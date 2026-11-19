@@ -1,13 +1,16 @@
 import React, { useRef, useState } from "react"
 import { motion, useAnimationControls, useMotionValue, useReducedMotion, useSpring } from "framer-motion"
+import { useLang } from "../../i18n/LanguageContext"
 
 /**
  * Interaction layer for the 3D objects.
  *
  * - The object drifts toward the pointer (a spring-smoothed translation,
  *   depth = how many px it may travel), so it feels attached to the cursor.
- * - Clicking makes it spin **in place**: a full rotation on the Y axis that
- *   accumulates, so several clicks keep adding turns.
+ * - Clicking makes it spin **in place**: a full rotation in the plane of the
+ *   screen (Z axis) that accumulates, so several clicks keep adding turns.
+ *   The Z axis is deliberate: rotating on Y would show the back of the
+ *   artwork and read as a glitch rather than a spin.
  *
  * The idle animation of the object itself lives on an inner element, so the
  * two never fight over the same transform channel.
@@ -18,10 +21,11 @@ const Interactive3D = ({
   depth = 28,
   spin = 360,
   duration = 1.15,
-  hint = "Cliquez pour pivoter",
+  hint,
   ...rest
 }) => {
   const ref = useRef(null)
+  const { t } = useLang()
   const reduceMotion = useReducedMotion()
   const controls = useAnimationControls()
   const turns = useRef(0)
@@ -52,7 +56,8 @@ const Interactive3D = ({
     if (reduceMotion) return
     turns.current += spin
     controls.start({
-      rotateY: turns.current,
+      rotateZ: turns.current,
+      scale: [1, 1.06, 1],
       transition: { duration, ease: [0.22, 1, 0.36, 1] },
     })
   }
@@ -81,7 +86,7 @@ const Interactive3D = ({
         transition={{ duration: 0.25 }}
         className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-hair bg-paper/90 px-2.5 py-1 font-mono text-[8.5px] uppercase tracking-[0.14em] text-ink-mute backdrop-blur"
       >
-        {hint}
+        {hint ?? t("spinHint")}
       </motion.span>
     </motion.div>
   )
