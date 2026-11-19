@@ -17,10 +17,10 @@ const Motion = () => {
 
   return (
   <section id="motion" className="shell scroll-mt-20 py-20 sm:py-24">
-    <div className="relative overflow-hidden rounded-[28px] border border-hair bg-white shadow-[0_30px_80px_-60px_rgba(0,0,0,0.5)] sm:rounded-[36px]">
+    <div className="relative overflow-hidden rounded-[28px] border border-hair bg-surface shadow-panel sm:rounded-[36px]">
       {/* Halo très doux derrière la sphère */}
       <div className="pointer-events-none absolute -end-16 top-1/2 h-[340px] w-[340px] -translate-y-1/2 rounded-full bg-crimson/[0.07] blur-[90px]" />
-      <div className="pointer-events-none absolute -bottom-24 start-1/4 h-[240px] w-[240px] rounded-full bg-amber/20 blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-24 start-1/4 h-[240px] w-[240px] rounded-full bg-highlight/20 blur-[100px]" />
 
       <div className="relative grid items-center gap-12 px-7 py-14 sm:px-12 sm:py-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:px-16">
         {/* Texte */}
@@ -51,7 +51,7 @@ const Motion = () => {
         {/* Sphère — dérive avec le pointeur, tourne sur elle-même au clic */}
         <div className="relative mx-auto h-[250px] w-[250px] sm:h-[320px] sm:w-[320px]">
           <Interactive3D
-            depth={14}
+            depth={5}
             spin={-360}
             className="relative mx-auto h-full w-full"
           >
@@ -63,7 +63,7 @@ const Motion = () => {
               <img
                 src={orbImg}
                 alt=""
-                className="h-[92%] w-[92%] object-contain drop-shadow-[0_24px_50px_rgba(0,0,0,0.28)]"
+                className="h-[92%] w-[92%] object-contain img-shadow-lg"
                 draggable="false"
               />
             </motion.div>

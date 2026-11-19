@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
-import { useLang } from "./i18n/LanguageContext"
 import Rail from "./components/common/Rail"
 import Footer from "./components/common/Footer"
 import Preloader from "./components/common/Preloader"
-import ChatWidget from "./components/common/ChatWidget"
 import DripTransition from "./components/common/DripTransition"
 import Hero from "./components/sections/Hero"
 import Beliefs from "./components/sections/Beliefs"
@@ -35,8 +33,47 @@ const markSeen = () => {
   }
 }
 
+const THEME_KEY = "mb-theme"
+
+const initialTheme = () => {
+  try {
+    return localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light"
+  } catch {
+    return "light"
+  }
+}
+
 const App = () => {
-  const { pendingLang } = useLang()
+  const [theme, setTheme] = useState(initialTheme)
+
+  // The `dark` class on <html> drives every theme token (see index.css).
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark")
+    // L'icône du site suit le thème (variante claire / variante sombre).
+    const favicon = document.getElementById("mb-favicon")
+    if (favicon) {
+      favicon.setAttribute(
+        "href",
+        theme === "dark" ? "/favicon-dark.png?v=2" : "/favicon-light.png?v=2"
+      )
+    }
+    try {
+      localStorage.setItem(THEME_KEY, theme)
+    } catch {
+      /* no-op */
+    }
+  }, [theme])
+
+  // La bascule de thème passe par la transition « peinture qui coule »,
+  // comme la langue : on demande, la transition applique sous la peinture.
+  const [pendingTheme, setPendingTheme] = useState(null)
+  const toggleTheme = () => {
+    if (pendingTheme) return
+    setPendingTheme(theme === "dark" ? "light" : "dark")
+  }
+  const applyTheme = (next) => {
+    if (next) setTheme(next)
+  }
   const [withIntro] = useState(firstVisit)
   // La mise en scène ne tourne que pendant l'ouverture : ensuite les
   // éléments restent dans leur état final, et changer de langue ne
@@ -71,7 +108,7 @@ const App = () => {
           introLive ? "intro-live" : ""
         }`}
       >
-        <Rail />
+        <Rail theme={theme} onToggleTheme={toggleTheme} />
         <main>
           <Hero />
           <Beliefs />
@@ -86,12 +123,15 @@ const App = () => {
       </div>
 
       {/* Conversation flottante — scénario écrit, sans IA. */}
-      <ChatWidget />
 
       {/* Changement de langue : la peinture noire coule du haut de l'écran,
           la langue bascule sous la peinture, puis elle glisse vers le bas et
           découvre la nouvelle page. */}
-      <DripTransition />
+      <DripTransition
+        pendingTheme={pendingTheme}
+        applyTheme={applyTheme}
+        clearPendingTheme={() => setPendingTheme(null)}
+      />
     </>
   )
 }

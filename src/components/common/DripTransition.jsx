@@ -7,8 +7,9 @@ import { useLang } from "../../i18n/LanguageContext"
   License: free on your own sites and your clients’ sites, paid work included.
   Not for resale, redistribution, templates or code collections · https://animorio.com/en/license/
 
-  Adapté au changement de langue du portfolio : la peinture qui coule est
-  noire (le « ink » du site) au lieu du bleu cobalt de la démo.
+  Adapté aux bascules du portfolio (langue et thème) : la peinture qui
+  coule prend la couleur opposée au thème courant (noire sur thème clair,
+  beige chaud sur thème sombre) au lieu du bleu cobalt de la démo.
 */
 
 /* ---- valeurs réglables ---- */
@@ -21,8 +22,57 @@ const STRANDS = 3 /* fils qui retiennent le bord supérieur pendant la descente 
 const DROPS = 2 /* gouttes qui se détachent et tombent devant */
 const SPEED = 1 /* 2 = deux fois plus vite, 0.5 = la moitié */
 
-const PAINT = "#111111" /* la peinture : noir */
-const GLINT = "#5f5f5f" /* le reflet fin sur les gouttes */
+/* La peinture s'adapte au thème courant : ses couleurs sont les jetons
+   --paint / --glint du système de couleurs (index.css) — encre noire sur le
+   thème clair, beige chaud sur le thème sombre — c'est-à-dire la couleur du
+   thème vers lequel on bascule, pour que la révélation soit sans couture. */
+const readPaintColors = () => {
+  try {
+    const cs = getComputedStyle(document.documentElement)
+    return {
+      paint: cs.getPropertyValue("--paint").trim() || "#43413e",
+      glint: cs.getPropertyValue("--glint").trim() || "#7a766f",
+    }
+  } catch {
+    return { paint: "#43413e", glint: "#7a766f" }
+  }
+}
+
+/* Les deux extrémités du dégradé de la coulée (jetons fixes --paint-ink /
+   --paint-cream) : la peinture part de la couleur du thème courant et se
+   transforme progressivement vers celle de l'autre thème pendant sa descente. */
+const readPaintEndpoints = () => {
+  try {
+    const cs = getComputedStyle(document.documentElement)
+    return {
+      ink: {
+        paint: cs.getPropertyValue("--paint-ink").trim() || "#43413e",
+        glint: cs.getPropertyValue("--glint-ink").trim() || "#7a766f",
+      },
+      cream: {
+        paint: cs.getPropertyValue("--paint-cream").trim() || "#e9e7e2",
+        glint: cs.getPropertyValue("--glint-cream").trim() || "#ffffff",
+      },
+    }
+  } catch {
+    return {
+      ink: { paint: "#43413e", glint: "#7a766f" },
+      cream: { paint: "#e9e7e2", glint: "#ffffff" },
+    }
+  }
+}
+
+const hexToRgb = (hex) => {
+  const h = hex.replace("#", "")
+  const v = h.length === 3 ? h.split("").map((c) => c + c).join("") : h
+  return [parseInt(v.slice(0, 2), 16), parseInt(v.slice(2, 4), 16), parseInt(v.slice(4, 6), 16)]
+}
+const mixHex = (a, b, t) => {
+  const ca = hexToRgb(a)
+  const cb = hexToRgb(b)
+  const c = ca.map((v, i) => Math.round(v + (cb[i] - v) * t))
+  return `rgb(${c[0]}, ${c[1]}, ${c[2]})`
+}
 const BAND = 3 /* la bande de peinture qui attend en haut, en px */
 const STEP = 3 /* pas de mesure du bord, en px */
 
@@ -45,14 +95,14 @@ function random(seed) {
 }
 
 /**
- * La transition de langue « peinture qui coule ».
+ * La transition « peinture qui coule » des bascules langue et thème.
  *
  * Le composant est toujours monté : il dessine la bande de peinture qui
- * attend en haut de l'écran et, quand la langue est demandée, il fait
- * couler la peinture, change la langue sous la peinture, puis la laisse
- * glisser vers le bas pour révéler la nouvelle page.
+ * attend en haut de l'écran et, quand une bascule est demandée, il fait
+ * couler la peinture, applique le changement sous la peinture, puis la
+ * laisse glisser vers le bas pour révéler la nouvelle page.
  */
-const DripTransition = () => {
+const DripTransition = ({ pendingTheme, applyTheme, clearPendingTheme }) => {
   const { pendingLang, applyLang, clearPending } = useLang()
   const canvasRef = useRef(null)
   const apiRef = useRef(null)
@@ -70,6 +120,30 @@ const DripTransition = () => {
     let band = 0 /* la bande se remplit à l'ouverture */
     let pour = null
     let busy = false
+    let queuedPour = null /* une bascule demandée pendant une coulée attend son tour */
+    /* Couleurs verrouillées au départ d'une coulée : le thème bascule sous la
+       peinture, la coulée doit donc garder sa couleur jusqu'à la fin. */
+    /* Pendant une coulée : { from, to } — la couleur active interpole de
+       `from` vers `to` au rythme de la progression verticale (pour.t). */
+    let lockedColors = null
+    /* Les couleurs du thème courant, relues à chaque bascule de la classe
+       `dark` sur <html> (la bande du haut suit le thème même au repos). */
+    let themeColors = readPaintColors()
+    const themeObserver = new MutationObserver(() => {
+      themeColors = readPaintColors()
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    const colorsForTheme = () => themeColors
+    const activeColors = () => {
+      if (!lockedColors) return colorsForTheme()
+      /* pour.t : 0→1 pendant le remplissage, 1→2 pendant le relâchement —
+         la transformation suit donc toute la descente de la couche. */
+      const progress = pour ? Math.min(1, Math.max(0, pour.t / 2)) : 0
+      return {
+        paint: mixHex(lockedColors.from.paint, lockedColors.to.paint, progress),
+        glint: mixHex(lockedColors.from.glint, lockedColors.to.glint, progress),
+      }
+    }
     const sag = { x: 0.5, h: 0, v: 0, target: 0 } /* le ventre de la bande au survol */
 
     /* ---------------------------------------------------------------- les coulures d'une coulée, en fractions de l'écran */
@@ -134,7 +208,7 @@ const DripTransition = () => {
 
     function drawGlint(x, y, r) {
       if (r < 4) return
-      ctx.strokeStyle = GLINT
+      ctx.strokeStyle = activeColors().glint
       ctx.globalAlpha = 0.55
       ctx.lineWidth = Math.min(1.6, r * 0.12)
       ctx.beginPath()
@@ -148,7 +222,7 @@ const DripTransition = () => {
       const h0 = BAND * band
       if (h0 <= 0.01) return
       const sx = sag.x * W
-      ctx.fillStyle = PAINT
+      ctx.fillStyle = activeColors().paint
       ctx.beginPath()
       ctx.moveTo(0, 0)
       ctx.lineTo(W, 0)
@@ -191,7 +265,7 @@ const DripTransition = () => {
         return { cx, hw, front, L, r: rr, drop, wob: p.wob }
       })
 
-      ctx.fillStyle = PAINT
+      ctx.fillStyle = activeColors().paint
       ctx.beginPath()
       ctx.moveTo(-2, -2)
       ctx.lineTo(W + 2, -2)
@@ -212,7 +286,7 @@ const DripTransition = () => {
         if (d.r < 0.8) continue
         const by = d.front + d.L - d.r
         const rx = d.r * (1 + 0.025 * Math.sin(clock * 9 + d.wob))
-        ctx.fillStyle = PAINT
+        ctx.fillStyle = activeColors().paint
         ctx.beginPath()
         ctx.ellipse(d.cx, by, rx, d.r, 0, 0, Math.PI * 2)
         ctx.fill()
@@ -224,7 +298,7 @@ const DripTransition = () => {
         if (!d.drop || d.drop.y - d.drop.r > H) continue
         const s = Math.min(0.55, d.drop.v * 0.05)
         const tipY = d.front + d.L
-        ctx.fillStyle = PAINT
+        ctx.fillStyle = activeColors().paint
         if (d.drop.dt < 0.09) {
           const k = 1 - d.drop.dt / 0.09
           ctx.beginPath()
@@ -247,7 +321,7 @@ const DripTransition = () => {
       const fall = H + 90
       const S = BAND + fall * Math.pow(k, 1.7)
       const peaks = []
-      ctx.fillStyle = PAINT
+      ctx.fillStyle = activeColors().paint
       for (const s of g.strands) {
         const x = s.x * W
         const snapAt = s.snap * H
@@ -312,7 +386,7 @@ const DripTransition = () => {
       ctx.fill()
       /* un liseré de lumière sous le bord qui descend */
       if (S < H + 10) {
-        ctx.strokeStyle = GLINT
+        ctx.strokeStyle = activeColors().glint
         ctx.globalAlpha = 0.4 * (1 - smooth(0.7, 1, S / H))
         ctx.lineWidth = 1
         ctx.beginPath()
@@ -337,16 +411,25 @@ const DripTransition = () => {
     }
 
     /* ---------------------------------------------------------------- la coulée */
-    function startPour(targetLang) {
-      if (busy) return
+    function startPour(applyFn, clearFn, originSelector) {
+      if (busy) {
+        queuedPour = { applyFn, clearFn, originSelector }
+        return
+      }
       busy = true
+      /* Départ : la peinture du thème courant. Arrivée : celle de l'autre
+         thème (pour une bascule de thème, c'est le thème de destination). */
+      const endpoints = readPaintEndpoints()
+      lockedColors = document.documentElement.classList.contains("dark")
+        ? { from: endpoints.cream, to: endpoints.ink }
+        : { from: endpoints.ink, to: endpoints.cream }
       sag.target = 0
       sag.h = 0
       sag.v = 0
-      /* la peinture part de la position du bouton de langue (celui qui est
-         visible : sur téléphone c'est celui de la barre du haut) */
+      /* la peinture part de la position du bouton qui a déclenché la bascule
+         (celui qui est visible : sur téléphone c'est celui de la barre du haut) */
       let x = W * 0.5
-      const link = Array.from(document.querySelectorAll("[data-drip-link]")).find(
+      const link = Array.from(document.querySelectorAll(originSelector)).find(
         (el) => el.offsetParent !== null || el.getClientRects().length > 0
       )
       if (link) {
@@ -358,14 +441,20 @@ const DripTransition = () => {
         onComplete: () => {
           pour = null
           busy = false
+          lockedColors = null
+          if (queuedPour) {
+            const q = queuedPour
+            queuedPour = null
+            startPour(q.applyFn, q.clearFn, q.originSelector)
+          }
         },
       })
       tl.to(pour, { t: 1, duration: FILL / SPEED, ease: "none" })
-      /* la langue change quand l'écran est entièrement noir */
-      tl.call(() => applyLang(targetLang))
+      /* la bascule (langue ou thème) s'applique quand l'écran est entièrement couvert */
+      tl.call(() => applyFn())
       tl.to({}, { duration: 0.12 / SPEED })
       tl.to(pour, { t: 2, duration: RELEASE / SPEED, ease: "none" })
-      tl.call(() => clearPending())
+      tl.call(() => clearFn())
     }
 
     /* ---------------------------------------------------------------- montage */
@@ -378,7 +467,7 @@ const DripTransition = () => {
       links.forEach((l) => l.el.removeEventListener("pointerenter", l.enter))
       links.forEach((l) => l.el.removeEventListener("pointerleave", l.leave))
       links.length = 0
-      document.querySelectorAll("[data-drip-link]").forEach((el) => {
+      document.querySelectorAll("[data-drip-link], [data-drip-theme]").forEach((el) => {
         const enter = (ev) => {
           if (REDUCED || ev.pointerType !== "mouse" || busy) return
           const r = canvas.getBoundingClientRect()
@@ -417,6 +506,7 @@ const DripTransition = () => {
     }
 
     return () => {
+      themeObserver.disconnect()
       window.removeEventListener("resize", onResize)
       gsap.ticker.remove(ticker)
       links.forEach((l) => {
@@ -425,7 +515,6 @@ const DripTransition = () => {
       })
       apiRef.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /* la langue demandée déclenche la coulée */
@@ -438,9 +527,23 @@ const DripTransition = () => {
       clearPending()
       return
     }
-    api.startPour(pendingLang)
+    api.startPour(() => applyLang(pendingLang), clearPending, "[data-drip-link]")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingLang])
+
+  /* le thème demandé déclenche la même coulée, depuis le bouton de thème */
+  useEffect(() => {
+    if (!pendingTheme) return
+    const api = apiRef.current
+    if (!api) return
+    if (api.reduced) {
+      applyTheme(pendingTheme)
+      clearPendingTheme()
+      return
+    }
+    api.startPour(() => applyTheme(pendingTheme), clearPendingTheme, "[data-drip-theme]")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingTheme])
 
   return (
     <canvas

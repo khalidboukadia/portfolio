@@ -5,7 +5,7 @@ import { scrollToElement } from "../../utils/helpers"
 
 const Footer = () => {
   const { personalInfo, navLinks } = useData()
-  const { t, n, isRTL } = useLang()
+  const { t, n } = useLang()
   const year = n(new Date().getFullYear())
 
   const connect = [
@@ -17,24 +17,12 @@ const Footer = () => {
 
   return (
     <footer className="relative overflow-hidden">
-      {/* Support band */}
-      <a
-        href={`mailto:${personalInfo.email}?subject=${encodeURIComponent(t("footerSupportSubject"))}`}
-        className="group flex items-center justify-center gap-3 bg-amber py-5 text-[15px] font-semibold text-ink transition-colors duration-300 hover:bg-[#FCD34D]/80"
-      >
-        <span aria-hidden="true">☕</span>
-        <span>{t("footerSupport")}</span>
-        <span className="arrow" aria-hidden="true">
-          {isRTL ? "\u2190" : "\u2192"}
-        </span>
-      </a>
-
       <div className="border-t border-hair bg-paper">
         <div className="shell relative py-16">
           {/* Watermark */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 select-none font-serif text-[26vw] italic leading-none text-black/[0.045]"
+            className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 select-none font-serif text-[26vw] italic leading-none text-ink/[0.05]"
           >
             {t("footerWatermark")}
           </span>

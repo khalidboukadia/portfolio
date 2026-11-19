@@ -4,6 +4,7 @@ import { ArrowUpRight, Award } from "lucide-react"
 import Reveal from "../common/Reveal"
 import SectionHead from "../common/SectionHead"
 import { useData, useLang } from "../../i18n/LanguageContext"
+import { FiGithub } from "react-icons/fi"
 import { spring } from "../../lib/motion"
 
 const ALL = "__all__"
@@ -21,13 +22,13 @@ const Featured = () => {
       const Icon = item.icon
       return (
         <Reveal key={item.id} delay={index * 0.08}>
-          <article className="group flex h-full flex-col rounded-3xl border border-hair bg-white p-7 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_34px_70px_-46px_rgba(0,0,0,0.5)] sm:p-9">
+          <article className="group flex h-full flex-col rounded-3xl border border-hair bg-surface p-7 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lift sm:p-9">
             {/* Icon + badges */}
             <div className="flex items-start justify-between gap-4">
               <motion.div
                 whileHover={{ y: -4, rotate: -4 }}
                 transition={spring.snappy}
-                className="relative flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-white"
+                className="relative flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-surface"
                 style={{
                   border: `2px solid ${item.color}`,
                   boxShadow: `0 20px 40px -24px ${item.color}`,
@@ -41,7 +42,7 @@ const Featured = () => {
               </motion.div>
 
               <div className="flex flex-wrap justify-end gap-2">
-                <span className="chip chip-mono border-amber/60 bg-amber/25 text-[#8a5a00]">
+                <span className="chip chip-mono border-highlight/60 bg-highlight/25 text-warning">
                   <Award className="h-3 w-3" />
                   {item.badge}
                 </span>
@@ -126,7 +127,7 @@ const SystemsBuilt = () => {
         const Icon = project.icon
         return (
           <Reveal key={project.id} delay={Math.min(index, 4) * 0.05}>
-            <article className="group grid gap-6 rounded-2xl border border-hair bg-white p-6 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_60px_-40px_rgba(0,0,0,0.45)] sm:grid-cols-[auto_1fr] sm:p-8">
+            <article className="group grid gap-6 rounded-2xl border border-hair bg-surface p-6 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lift sm:grid-cols-[auto_1fr] sm:p-8">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-hair bg-paper">
                 <Icon className="h-5 w-5 text-ink" />
               </div>
@@ -224,8 +225,8 @@ const ProjectIndex = () => {
                 transition={spring.snappy}
                 className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors duration-200 ${
                   active
-                    ? "bg-ink text-white"
-                    : "border border-hair bg-white text-ink-mute hover:border-ink/25 hover:text-ink"
+                    ? "bg-ink text-paper"
+                    : "border border-hair bg-surface text-ink-mute hover:border-ink/25 hover:text-ink"
                 }`}
               >
                 {category === ALL ? t("projectAll") : category}
@@ -236,7 +237,7 @@ const ProjectIndex = () => {
       </Reveal>
 
       <Reveal>
-        <div className="overflow-hidden rounded-2xl border border-hair bg-white">
+        <div className="overflow-hidden rounded-2xl border border-hair bg-surface">
           {visible.map((project, index) => (
             <motion.a
               key={project.id}
@@ -262,7 +263,7 @@ const ProjectIndex = () => {
 
               <span className="chip chip-mono hidden shrink-0 sm:inline-flex">{project.category}</span>
 
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-hair text-ink-mute transition-colors duration-200 group-hover:border-crimson group-hover:bg-crimson group-hover:text-white">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-hair text-ink-mute transition-colors duration-200 group-hover:border-crimson group-hover:bg-crimson group-hover:text-paper">
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </motion.a>
@@ -276,6 +277,7 @@ const ProjectIndex = () => {
 /* ------------------------------------------------------------------ */
 const Projects = () => {
   const { t } = useLang()
+  const { personalInfo } = useData()
 
   return (
   <section id="projects" className="shell scroll-mt-20 py-24 sm:py-28 lg:py-32">
@@ -288,6 +290,22 @@ const Projects = () => {
     <Featured />
     <SystemsBuilt />
     <ProjectIndex />
+
+    {/* Sélection, pas l'inventaire complet : la suite vit sur GitHub. */}
+    <div className="mt-20 flex flex-col items-center gap-4 border-t border-hair pt-10 text-center">
+      <p className="max-w-xl text-[14px] leading-relaxed text-ink-mute">
+        {t("projectsMoreNote")}
+      </p>
+      <a
+        href={personalInfo.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group inline-flex items-center gap-2.5 rounded-full border border-hair bg-surface px-5 py-2.5 text-[13.5px] font-semibold text-ink shadow-pill transition-colors duration-300 hover:border-crimson hover:text-crimson"
+      >
+        <FiGithub className="h-4 w-4" />
+        {t("projectsGithubCta")}
+      </a>
+    </div>
   </section>
   )
 }

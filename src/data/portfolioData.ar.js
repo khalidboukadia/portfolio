@@ -76,7 +76,7 @@ export const socialLinks = [
 export const heroEyebrow = ["خبرة في التطوير الشامل", "تقنيات حديثة", "منتجات مُسلَّمة"]
 
 export const heroStats = [
-  { value: 27, suffix: "+", label: "مشاريع" },
+  { value: 27, suffix: "+", label: "مشاريع مختارة" },
   { value: 1, suffix: "+", label: "سنوات خبرة" },
   { value: 4, suffix: "", label: "لغات" },
 ]

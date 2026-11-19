@@ -24,14 +24,19 @@ export const formatNumber = (value, lang) => {
   return String(value).replace(/\d/g, (d) => AR_DIGITS[Number(d)])
 }
 
+/* Le choix de langue vit dans `sessionStorage` : il survit aux
+   rechargements de l'onglet courant, mais toute nouvelle fenêtre, tout
+   nouvel onglet ou nouveau navigateur repart du français — la langue
+   par défaut. L'ancien stockage localStorage est nettoyé au passage. */
 const detect = () => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY)
+    localStorage.removeItem(STORAGE_KEY)
+    const saved = sessionStorage.getItem(STORAGE_KEY)
     if (saved === "ar" || saved === "fr") return saved
   } catch {
     /* no-op */
   }
-  return "ar"
+  return "fr"
 }
 
 export const LanguageProvider = ({ children }) => {
@@ -45,7 +50,7 @@ export const LanguageProvider = ({ children }) => {
     document.documentElement.lang = lang
     document.documentElement.dir = dir
     try {
-      localStorage.setItem(STORAGE_KEY, lang)
+      sessionStorage.setItem(STORAGE_KEY, lang)
     } catch {
       /* no-op */
     }

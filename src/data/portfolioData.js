@@ -76,7 +76,7 @@ export const socialLinks = [
 export const heroEyebrow = ["Expertise Full-Stack", "Stacks Modernes", "Produits Livrés"]
 
 export const heroStats = [
-  { value: 27, suffix: "+", label: "Projets" },
+  { value: 27, suffix: "+", label: "Projets sélectionnés" },
   { value: 1, suffix: "+", label: "Ans d'exp." },
   { value: 4, suffix: "", label: "Langues" },
 ]

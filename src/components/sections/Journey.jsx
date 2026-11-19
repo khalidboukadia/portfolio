@@ -10,7 +10,7 @@ const Journey = () => {
   const { t, n } = useLang()
 
   return (
-  <section id="experience" className="scroll-mt-20 border-y border-hair bg-white/40 py-24 sm:py-28 lg:py-32">
+  <section id="experience" className="scroll-mt-20 border-y border-hair bg-surface/40 py-24 sm:py-28 lg:py-32">
     <div className="shell">
       <SectionHead
         kicker={t("journeyKicker")}
@@ -30,7 +30,7 @@ const Journey = () => {
 
           {experiences.map((exp, index) => (
             <Reveal key={exp.id} delay={index * 0.06}>
-              <article className="rounded-2xl border border-hair bg-white p-6 sm:p-8">
+              <article className="rounded-2xl border border-hair bg-surface p-6 sm:p-8">
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-crimson">
                   {n(exp.period)}
                 </p>
@@ -78,7 +78,7 @@ const Journey = () => {
           <div className="border-t border-hair">
             {education.map((edu, index) => (
               <Reveal key={edu.id} delay={index * 0.06}>
-                <div className="group flex items-start justify-between gap-6 border-b border-hair py-5 transition-colors duration-300 hover:bg-black/[0.015]">
+                <div className="group flex items-start justify-between gap-6 border-b border-hair py-5 transition-colors duration-300 hover:bg-ink/[0.03]">
                   <div>
                     <p className="text-[15px] font-semibold text-ink">{edu.degree}</p>
                     <p className="mt-1 text-[13.5px] text-ink-mute">
@@ -90,7 +90,7 @@ const Journey = () => {
                       {n(edu.period)}
                     </span>
                     {edu.current && (
-                      <span className="chip chip-mono border-[#059669]/30 bg-[#059669]/10 text-[#047857]">
+                      <span className="chip chip-mono border-success/30 bg-success/10 text-success">
                         {t("journeyInProgress")}
                       </span>
                     )}
@@ -125,7 +125,7 @@ const Journey = () => {
                     </span>
                   </div>
                   {/* La barre se remplit en descendant jusqu'à sa position */}
-                  <div className="h-[3px] w-full overflow-hidden rounded-full bg-black/10">
+                  <div className="h-[3px] w-full overflow-hidden rounded-full bg-ink/10">
                     <motion.div
                       className="h-full origin-start rounded-full bg-ink/70"
                       initial={{ width: 0 }}

@@ -26,7 +26,7 @@ const Approach = () => {
         >
           <div className="group">
             <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-ink font-mono text-[10px] font-semibold text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-ink font-mono text-[10px] font-semibold text-paper">
                 {n(String(index + 1).padStart(2, "0"))}
               </span>
               <h3 className="text-[17px] font-semibold leading-snug tracking-tight transition-colors duration-300 group-hover:text-crimson sm:text-[19px]">

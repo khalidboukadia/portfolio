@@ -5,11 +5,12 @@ import Button from "../common/Button"
 import CountUp from "../common/CountUp"
 import Butterfly3D from "../common/Butterfly3D"
 import Interactive3D from "../common/Interactive3D"
-import OrbitRing from "../common/OrbitRing"
 import ConsoleWidget from "../common/ConsoleWidget"
 import butterflyImg from "../../assets/butterfly-3d.webp"
 import orbImg from "../../assets/glow-orb-3d.webp"
 import { useData, useLang } from "../../i18n/LanguageContext"
+import { MERN_COLORS, LARAVEL } from "../../lib/brand"
+import { UI } from "../../i18n/ui"
 import { scrollToElement } from "../../utils/helpers"
 
 /** Hand-drawn brush stroke used as the hero's oversized backdrop mark. */
@@ -23,20 +24,20 @@ const BrushStroke = () => (
   >
     <path
       d="M232 22c-46 128 34 226 6 340-18 74-62 140-118 190-24 22-44 42-58 62"
-      stroke="#E9E9E4"
+      stroke="var(--brush)"
       strokeWidth="26"
       strokeLinecap="round"
     />
     <path
       d="M150 190c-34 96 6 176 44 236"
-      stroke="#E9E9E4"
+      stroke="var(--brush)"
       strokeWidth="14"
       strokeLinecap="round"
       opacity="0.85"
     />
     <path
       d="M286 300c-30 82-24 168 10 246"
-      stroke="#F0F0EC"
+      stroke="var(--brush)"
       strokeWidth="10"
       strokeLinecap="round"
     />
@@ -46,7 +47,7 @@ const BrushStroke = () => (
 /** Polaroid-style card — the reference site floats these at the foot of the hero. */
 const FloatingCard = ({ className, rotate, caption, children }) => (
   <div
-    className={`pointer-events-none absolute z-10 w-[128px] rounded-[18px] border border-hair bg-white p-2 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.45)] sm:w-[150px] ${className}`}
+    className={`pointer-events-none absolute z-10 w-[128px] rounded-[18px] border border-hair bg-surface p-2 shadow-float sm:w-[150px] ${className}`}
     style={{ rotate: `${rotate}deg` }}
   >
     <div className="overflow-hidden rounded-[12px]">{children}</div>
@@ -81,7 +82,7 @@ const Hero = () => {
   return (
     <>
       {/* ---------- Activity strip ---------- */}
-      <div className="pw-strip relative overflow-hidden border-b border-hair">
+      <div className="pw-strip border-b border-hair">
         <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
           <div>
             <p className="eyebrow flex items-center gap-2">
@@ -90,7 +91,7 @@ const Hero = () => {
             </p>
             <p className="mt-1.5 text-[13px] text-ink-mute">{t("heroActivity")}</p>
           </div>
-          <div className="flex items-start gap-8 pe-16 sm:gap-12 lg:pe-28">
+          <div className="flex items-start gap-8 sm:gap-12">
             {heroStats.map((stat) => (
               <div key={stat.label} className="pw-stat">
                 <p className="display text-[1.6rem] leading-none sm:text-[1.9rem]">
@@ -103,14 +104,6 @@ const Hero = () => {
             ))}
           </div>
         </div>
-
-        {/* Papillon en apesanteur, comme sur le site de référence */}
-        <img
-          src={butterflyImg}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute end-0 top-3 z-10 w-24 rotate-[-8deg] drop-shadow-[0_18px_24px_rgba(0,0,0,0.12)] sm:w-32 lg:end-6 lg:top-1 lg:w-36"
-        />
       </div>
 
       {/* ---------- Hero ---------- */}
@@ -192,22 +185,16 @@ const Hero = () => {
                 ))}
 
                 {/* Ligne de scan : verticale, de gauche à droite */}
-                <span className="pw-fig-scan absolute inset-y-0 start-0 w-[2px] opacity-0 bg-crimson/70 shadow-[0_0_16px_3px_rgba(176,0,32,0.35)]" />
+                <span className="pw-fig-scan absolute inset-y-0 start-0 w-[2px] opacity-0 bg-crimson/70 glow-accent" />
               </div>
 
-              {/* The 3D butterfly + its orbit: drifts with the pointer,
-                  spins in place when clicked */}
+              {/* The 3D butterfly: drifts with the pointer, spins in place
+                  when clicked. (The orbiting text ring around it was
+                  removed at the owner's request.) */}
               <div className="pw-fig absolute end-[4px] top-[-58px] z-20">
                 <div className="pw-fig-wipe">
                   <Interactive3D depth={30} className="h-full w-full">
                     <div className="relative">
-                      <div className="pointer-events-none absolute -inset-7 text-ink-faint/70">
-                        <OrbitRing
-                          size={300}
-                          duration={38}
-                          items={["React", "Node.js", "Laravel", "MongoDB", "TypeScript", "Tailwind"]}
-                        />
-                      </div>
                       <Butterfly3D size={248} />
                     </div>
                   </Interactive3D>
@@ -218,9 +205,9 @@ const Hero = () => {
               <div className="pw-card absolute end-[4px] top-[186px] z-10 w-[252px]">
                 <motion.div
                   style={{ x: cardX, y: cardY }}
-                  className="rounded-3xl border border-hair bg-white p-3 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.55)]"
+                  className="rounded-3xl border border-hair bg-surface p-3 shadow-pop"
                 >
-                  <div className="relative flex h-[212px] items-center justify-center overflow-hidden rounded-2xl bg-[#F1F1EC]">
+                  <div className="relative flex h-[212px] items-center justify-center overflow-hidden rounded-2xl bg-panel">
                     <span className="absolute -end-8 -top-10 h-40 w-40 rounded-full bg-crimson/10 blur-2xl" />
                     <span className="font-serif text-[92px] italic leading-none text-ink">M</span>
                     <span className="absolute bottom-6 end-6 h-3 w-3 rounded-full bg-crimson" />
@@ -242,12 +229,12 @@ const Hero = () => {
               {/* Floating mini cards */}
               <div className="pw-card absolute -start-[10px] top-[236px] z-10">
                 <FloatingCard className="relative" rotate={-9} caption="Stack · MERN">
-                  <div dir="ltr" className="flex h-[96px] items-center justify-center gap-1.5 bg-[#14151A]">
+                  <div dir="ltr" className="flex h-[96px] items-center justify-center gap-1.5 bg-night">
                     {["M", "E", "R", "N"].map((l, i) => (
                       <span
                         key={l}
                         className="font-mono text-[13px] font-bold"
-                        style={{ color: ["#F7DF1E", "#61DAFB", "#47A248", "#FF2D20"][i] }}
+                        style={{ color: MERN_COLORS[i] }}
                       >
                         {l}
                       </span>
@@ -258,42 +245,36 @@ const Hero = () => {
 
               <div className="pw-card-2 absolute end-[-16px] top-[366px] z-10">
                 <FloatingCard className="relative" rotate={7} caption="Laravel · PHP">
-                  <div className="flex h-[96px] items-center justify-center bg-[#FFF1F2]">
-                    <span className="font-serif text-4xl italic text-[#FF2D20]">L</span>
+                  <div className="flex h-[96px] items-center justify-center bg-blush">
+                    <span className="font-serif text-4xl italic" style={{ color: LARAVEL }}>L</span>
                   </div>
                 </FloatingCard>
               </div>
 
               {/* Live console */}
               <div className="pw-term absolute bottom-0 start-[-18px] z-20 w-[272px]">
-                <ConsoleWidget lines={t("heroConsole")} />
+                <ConsoleWidget lines={UI.fr.heroConsole} />
               </div>
             </div>
           </div>
 
-          {/* Galerie mobile : cartes légèrement inclinées, comme sur la référence */}
+          {/* Galerie mobile : trois cartes identiques disposées en pyramide —
+              le papillon au sommet, MERN et Motion à la base */}
           <div className="pw-card mt-12 flex items-center justify-center lg:hidden">
-            <div className="relative h-[190px] w-full">
-              <div className="absolute start-0 top-6 w-[42%] -rotate-[7deg] overflow-hidden rounded-2xl border border-hair bg-white p-2 shadow-[0_24px_50px_-30px_rgba(0,0,0,0.5)]">
+            <div className="relative h-[296px] w-full">
+              <div className="absolute left-1/2 top-0 z-10 w-[46%] -translate-x-1/2 -rotate-[2deg] overflow-hidden rounded-2xl border border-hair bg-surface p-2 shadow-float">
                 <img src={butterflyImg} alt="" className="h-[120px] w-full object-contain" />
                 <p className="pt-1 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-ink-faint">
                   3D
                 </p>
               </div>
-              <div className="absolute end-0 top-2 w-[42%] rotate-[5deg] overflow-hidden rounded-2xl border border-hair bg-white p-2 shadow-[0_24px_50px_-30px_rgba(0,0,0,0.5)]">
-                <img src={orbImg} alt="" className="h-[120px] w-full object-contain" />
-                <p className="pt-1 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-ink-faint">
-                  Motion
-                </p>
-              </div>
-              <div className="absolute start-1/2 top-14 -translate-x-1/2 -rotate-[2deg] overflow-hidden rounded-2xl border border-hair bg-white p-2 shadow-[0_24px_50px_-30px_rgba(0,0,0,0.5)]">
-                <div className="flex h-[120px] items-center justify-center gap-1 bg-[#14151A]">
+              <div className="absolute start-0 top-[138px] w-[46%] -rotate-[7deg] overflow-hidden rounded-2xl border border-hair bg-surface p-2 shadow-float">
+                <div dir="ltr" className="flex h-[120px] items-center justify-center gap-1.5 bg-night">
                   {["M", "E", "R", "N"].map((l, i) => (
                     <span
                       key={l}
-                      dir="ltr"
-                      className="font-mono text-[13px] font-bold"
-                      style={{ color: ["#F7DF1E", "#61DAFB", "#47A248", "#FF2D20"][i] }}
+                      className="font-mono text-xl font-bold"
+                      style={{ color: MERN_COLORS[i] }}
                     >
                       {l}
                     </span>
@@ -301,6 +282,12 @@ const Hero = () => {
                 </div>
                 <p className="pt-1 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-ink-faint">
                   Stack
+                </p>
+              </div>
+              <div className="absolute end-0 top-[138px] w-[46%] rotate-[5deg] overflow-hidden rounded-2xl border border-hair bg-surface p-2 shadow-float">
+                <img src={orbImg} alt="" className="h-[120px] w-full object-contain" />
+                <p className="pt-1 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-ink-faint">
+                  Motion
                 </p>
               </div>
             </div>

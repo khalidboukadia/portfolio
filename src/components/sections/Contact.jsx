@@ -1,22 +1,21 @@
 import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { FiSend, FiCheckCircle, FiAlertCircle, FiMail, FiPhone, FiMapPin, FiCopy } from "react-icons/fi"
-import emailjs from "@emailjs/browser"
 import Reveal from "../common/Reveal"
 import Button from "../common/Button"
 import { useData, useLang } from "../../i18n/LanguageContext"
 import { scrollToElement } from "../../utils/helpers"
 import { spring } from "../../lib/motion"
 
-// ✅ lecture directe depuis les variables d'environnement
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+/* Envoi sans backend : le formulaire est posté en JSON vers FormSubmit,
+   qui le livre dans la boîte e-mail du propriétaire. Aucune clé, aucun
+   compte, aucune librairie — un simple fetch (0 Ko de JS ajouté). */
+const FORMSUBMIT_URL = "https://formsubmit.co/ajax/khalidboukadia@gmail.com"
 
 const Contact = () => {
   const { personalInfo } = useData()
-  const { t, n } = useLang()
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" })
+  const { t } = useLang()
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "", honey: "" })
   const [status, setStatus] = useState(null)
   const [errorMsg, setErrorMsg] = useState("")
   const [copied, setCopied] = useState(false)
@@ -44,30 +43,44 @@ const Contact = () => {
       return
     }
 
+    // Pot de miel anti-spam : un bot qui remplit ce champ caché est
+    // « servi » en silence, sans rien envoyer.
+    if (formData.honey) {
+      setStatus("success")
+      setFormData({ name: "", email: "", subject: "", message: "", honey: "" })
+      setTimeout(() => setStatus(null), 5000)
+      return
+    }
+
     setStatus("sending")
     setErrorMsg("")
 
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
+      const res = await fetch(FORMSUBMIT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
           subject: formData.subject,
           message: formData.message,
-          to_name: "Mustapha",
-          reply_to: formData.email,
-        },
-        PUBLIC_KEY
-      )
+          _subject: `Nouveau message du portfolio — ${formData.subject}`,
+          _replyto: formData.email,
+          _template: "table",
+          _captcha: "false",
+        }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data || String(data.success) !== "true") {
+        throw new Error("send failed")
+      }
 
       setStatus("success")
-      setFormData({ name: "", email: "", subject: "", message: "" })
+      setFormData({ name: "", email: "", subject: "", message: "", honey: "" })
       setTimeout(() => setStatus(null), 5000)
-    } catch (error) {
+    } catch {
       setStatus("error")
-      setErrorMsg(error.text || t("formErrorSend"))
+      setErrorMsg(t("formErrorSend"))
     }
   }
 
@@ -113,7 +126,7 @@ const Contact = () => {
           </div>
 
           <div className="w-full max-w-md">
-            <div className="flex items-stretch border border-hair bg-white">
+            <div className="flex items-stretch border border-hair bg-surface">
               <span
                 dir="ltr"
                 className="flex min-w-0 flex-1 items-center overflow-hidden px-4 py-3.5 font-mono text-[12.5px] text-ink"
@@ -124,7 +137,7 @@ const Contact = () => {
                 type="button"
                 onClick={copyEmail}
                 aria-label={copied ? t("contactCopied") : t("contactCopy")}
-                className="flex shrink-0 items-center gap-2 bg-ink px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-white transition-colors duration-200 hover:bg-crimson sm:px-5"
+                className="flex shrink-0 items-center gap-2 bg-ink px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-paper transition-colors duration-200 hover:bg-crimson sm:px-5"
               >
                 {copied ? <FiCheckCircle className="h-4 w-4" /> : <FiCopy className="h-4 w-4" />}
                 {/* Sur mobile le bouton reste compact (icône seule) pour que
@@ -157,7 +170,7 @@ const Contact = () => {
               const Icon = info.icon
               const body = (
                 <>
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hair bg-white text-ink-mute">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hair bg-surface text-ink-mute">
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
@@ -189,8 +202,8 @@ const Contact = () => {
           </div>
 
           <Reveal delay={0.2}>
-            <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-hair bg-white px-4 py-2.5">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[#059669]" />
+            <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-hair bg-surface px-4 py-2.5">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-success" />
               <span className="text-[13px] text-ink-mute">{t("contactAvailable")}</span>
             </div>
           </Reveal>
@@ -205,10 +218,10 @@ const Contact = () => {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={spring.default}
-                className="mb-6 flex items-center gap-3 rounded-xl border border-[#059669]/25 bg-[#059669]/10 p-4"
+                className="mb-6 flex items-center gap-3 rounded-xl border border-success/25 bg-success/10 p-4"
               >
-                <FiCheckCircle className="h-5 w-5 shrink-0 text-[#047857]" />
-                <p className="text-[14px] font-medium text-[#065F46]">
+                <FiCheckCircle className="h-5 w-5 shrink-0 text-success" />
+                <p className="text-[14px] font-medium text-success">
                   {t("formSuccess")}
                 </p>
               </motion.div>
@@ -228,6 +241,17 @@ const Contact = () => {
             )}
 
             <form onSubmit={handleSubmit}>
+              {/* Champ invisible anti-spam (pot de miel) */}
+              <input
+                type="text"
+                name="honey"
+                value={formData.honey}
+                onChange={handleChange}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute h-0 w-0 opacity-0"
+              />
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">

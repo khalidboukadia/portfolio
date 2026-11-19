@@ -3,6 +3,145 @@
 @tailwind utilities;
 
 /* ==========================================
+   COLOR SYSTEM — the single source of truth for every color on the site.
+
+   Semantic tokens, defined once per theme. Components must use these
+   tokens (through the Tailwind color names in tailwind.config.js or the
+   CSS variables directly) — never raw hex / palette classes.
+
+   Surfaces      paper (page background) · surface (cards) ·
+                 panel (inset / variant) · blush (tinted card)
+   Text          ink (primary) · ink-soft · ink-mute (secondary) ·
+                 ink-faint (captions, placeholders)
+   Accent        crimson (+ crimson/alpha for soft fills & lines)
+   Border        hair (ink at 8%) · hairstrong (ink at 16%)
+   Status        success · warning
+   Highlight     highlight (amber band / badges, fixed in both themes)
+                 with onhighlight (text on the highlight color)
+   Fixed dark    terminal (console) · night (MERN card) — dark in BOTH
+                 themes by design; their inner text uses white tones.
+   Transition    --paint / --glint: the drip-transition paint, read by
+                 DripTransition.jsx from these variables.
+   Decoration    --brush: hero brush-stroke color.
+   Shadows       --sh-card / --sh-soft / --sh-lift / --sh-float /
+                 --sh-pop / --sh-panel / --sh-pill: one shadow scale;
+                 only the alpha deepens in dark mode.
+   Boot screen   --boot-*: the intro screen is a fixed black stage in
+                 both themes, so these never flip.
+
+   RGB triplets so Tailwind alpha modifiers (bg-crimson/10…) keep working.
+   ========================================== */
+:root {
+  /* Surfaces */
+  --c-paper: 248 248 246;
+  --c-surface: 255 255 255;
+  --c-panel: 241 241 236;
+  --c-blush: 255 241 242;
+  /* Text */
+  --c-ink: 17 17 17;
+  --c-ink-soft: 34 34 34;
+  --c-ink-mute: 107 114 128;
+  --c-ink-faint: 156 163 175;
+  /* Accent + status */
+  --c-crimson: 176 0 32;
+  --c-success: 4 120 87;
+  --c-warning: 138 90 0;
+  /* Highlight (fixed) */
+  --c-highlight: 252 211 77;
+  --c-onhighlight: 23 23 23;
+  /* Drip transition paint */
+  --paint: #43413e;
+  --glint: #7a766f;
+  /* Decoration */
+  --brush: #e9e9e4;
+  /* Shadows */
+  --sh-card: 0 1px 2px rgb(0 0 0 / 0.03), 0 18px 48px -28px rgb(0 0 0 / 0.22);
+  --sh-soft: 0 18px 48px -32px rgb(0 0 0 / 0.3);
+  --sh-lift: 0 34px 70px -46px rgb(0 0 0 / 0.5);
+  --sh-float: 0 24px 55px -30px rgb(0 0 0 / 0.48);
+  --sh-pop: 0 40px 90px -48px rgb(0 0 0 / 0.55);
+  --sh-panel: 0 30px 80px -60px rgb(0 0 0 / 0.5);
+  --sh-pill: 0 12px 30px -20px rgb(0 0 0 / 0.5);
+  color-scheme: light;
+}
+
+.dark {
+  /* Surfaces */
+  --c-paper: 12 13 16;
+  --c-surface: 22 24 30;
+  --c-panel: 28 30 38;
+  --c-blush: 43 22 27;
+  /* Text */
+  --c-ink: 243 243 240;
+  --c-ink-soft: 214 216 211;
+  --c-ink-mute: 165 171 182;
+  --c-ink-faint: 120 126 138;
+  /* Accent + status */
+  --c-crimson: 255 84 98;
+  --c-success: 52 211 153;
+  --c-warning: 252 211 77;
+  /* Drip transition paint */
+  --paint: #e9e7e2;
+  --glint: #ffffff;
+  /* Decoration */
+  --brush: #26282f;
+  /* Shadows — same geometry, deeper alpha */
+  --sh-card: 0 1px 2px rgb(0 0 0 / 0.25), 0 18px 48px -28px rgb(0 0 0 / 0.55);
+  --sh-soft: 0 18px 48px -32px rgb(0 0 0 / 0.5);
+  --sh-lift: 0 34px 70px -46px rgb(0 0 0 / 0.65);
+  --sh-float: 0 24px 55px -30px rgb(0 0 0 / 0.62);
+  --sh-pop: 0 40px 90px -48px rgb(0 0 0 / 0.72);
+  --sh-panel: 0 30px 80px -60px rgb(0 0 0 / 0.65);
+  --sh-pill: 0 12px 30px -20px rgb(0 0 0 / 0.65);
+  color-scheme: dark;
+}
+
+/* Fixed palettes (identical in both themes, by design) */
+:root {
+  --c-terminal: 14 15 18; /* console widget background */
+  --c-night: 20 21 26; /* MERN mini-card background */
+  /* Drip-transition gradient endpoints (fixed): during a pour, the paint
+     interpolates across its travel from the current theme's paint color
+     to the other one — ink <-> cream. */
+  --paint-ink: #43413e;
+  --paint-cream: #e9e7e2;
+  --glint-ink: #7a766f;
+  --glint-cream: #ffffff;
+  --boot-bg: #111111;
+  --boot-fg: #f8f8f6;
+  --boot-accent: #b00020;
+  --boot-glitch: #2fd98a;
+}
+
+/* Shadow scale utilities (values come from --sh-* above) */
+@layer utilities {
+  .shadow-card { box-shadow: var(--sh-card); }
+  .shadow-soft { box-shadow: var(--sh-soft); }
+  .shadow-lift { box-shadow: var(--sh-lift); }
+  .shadow-float { box-shadow: var(--sh-float); }
+  .shadow-pop { box-shadow: var(--sh-pop); }
+  .shadow-panel { box-shadow: var(--sh-panel); }
+  .shadow-pill { box-shadow: var(--sh-pill); }
+  /* Accent glow (availability dot, small highlights) */
+  .glow-accent { box-shadow: 0 0 16px 3px rgb(var(--c-crimson) / 0.35); }
+  /* Drop shadows for the 3D artwork (filter, not box-shadow) */
+  .img-shadow { filter: drop-shadow(0 18px 24px rgb(0 0 0 / 0.14)); }
+  .img-shadow-lg { filter: drop-shadow(0 24px 50px rgb(0 0 0 / 0.28)); }
+}
+.dark .img-shadow { filter: drop-shadow(0 18px 24px rgb(0 0 0 / 0.4)); }
+.dark .img-shadow-lg { filter: drop-shadow(0 24px 50px rgb(0 0 0 / 0.5)); }
+
+/* Smooth the flip between themes (backgrounds and text only). */
+body,
+.card-paper,
+.chip,
+.field {
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease;
+}
+
+/* ==========================================
    Base Styles
    ========================================== */
 @layer base {
@@ -43,7 +182,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #b00020;
+    outline: 2px solid rgb(var(--c-crimson));
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -52,15 +191,15 @@
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #f8f8f6;
+    background: rgb(var(--c-paper));
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.14);
-    border: 3px solid #f8f8f6;
+    background: rgb(var(--c-ink) / 0.14);
+    border: 3px solid rgb(var(--c-paper));
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.26);
+    background: rgb(var(--c-ink) / 0.26);
   }
 }
 
@@ -99,14 +238,12 @@
   }
 
   .card-paper {
-    @apply bg-white border border-hair rounded-2xl;
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.03),
-      0 18px 48px -28px rgba(0, 0, 0, 0.22);
+    @apply bg-surface border border-hair rounded-2xl;
+    box-shadow: var(--sh-card);
   }
 
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-hair bg-white px-3 py-1.5 text-[11px] sm:text-xs font-medium text-ink-mute;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-hair bg-surface px-3 py-1.5 text-[11px] sm:text-xs font-medium text-ink-mute;
   }
 
   .chip-mono {
@@ -115,7 +252,7 @@
 
   /* ---- Buttons ------------------------------------------------------- */
   .btn-dark {
-    @apply inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[15px] font-semibold text-white;
+    @apply inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[15px] font-semibold text-paper;
     transition:
       background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
       transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -133,7 +270,7 @@
       color 220ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-outline:hover {
-    @apply border-ink bg-ink text-white;
+    @apply border-ink bg-ink text-paper;
   }
 
   .btn-ghost {
@@ -154,7 +291,7 @@
 
   /* ---- Inputs -------------------------------------------------------- */
   .field {
-    @apply w-full rounded-xl border border-hair bg-white px-4 py-3 text-[15px] text-ink outline-none;
+    @apply w-full rounded-xl border border-hairstrong bg-surface px-4 py-3 text-[15px] text-ink outline-none;
     transition:
       border-color 200ms ease,
       box-shadow 200ms ease;
@@ -164,7 +301,7 @@
   }
   .field:focus {
     @apply border-crimson;
-    box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.09);
+    box-shadow: 0 0 0 3px rgb(var(--c-crimson) / 0.12);
   }
 
   /* ---- Rail ---------------------------------------------------------- */
@@ -175,7 +312,7 @@
       background-color 200ms ease;
   }
   .rail-btn:hover {
-    @apply bg-black/5 text-ink;
+    @apply bg-ink/5 text-ink;
   }
   .rail-btn[data-active="true"] {
     @apply text-crimson;
@@ -269,7 +406,7 @@
   grid-template-columns: repeat(8, 1fr);
 }
 .pw-bars i {
-  background: #111111;
+  background: var(--boot-bg);
   transform-origin: top;
   animation: pwBar 0.45s cubic-bezier(0.7, 0, 0.2, 1) both;
   margin-right: -1px;
@@ -305,7 +442,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 24px;
-  color: #f8f8f6;
+  color: var(--boot-fg);
   animation: pwOut 0.2s ease 1.3s both;
 }
 .pw-boot-logo {
@@ -318,7 +455,7 @@
   width: 100%;
   height: auto;
   shape-rendering: crispEdges;
-  color: #f8f8f6;
+  color: var(--boot-fg);
 }
 .pw-boot-logo--mono {
   width: min(30vw, 168px);
@@ -332,7 +469,7 @@
   left: 0;
   width: 3.2%;
   height: 100%;
-  background: #b00020;
+  background: var(--boot-accent);
   opacity: 0;
   animation: pwBCur 0.75s steps(22, end) 0.2s both;
 }
@@ -343,37 +480,20 @@
   opacity: 0;
 }
 .pw-boot-logo .g1 {
-  color: #b00020;
+  color: var(--boot-accent);
   animation: pwG1 0.4s steps(1, end) 0.98s forwards;
 }
 .pw-boot-logo .g2 {
-  color: #2fd98a;
+  color: var(--boot-glitch);
   animation: pwG2 0.4s steps(1, end) 0.98s forwards;
 }
 
 .intro-live .pw-nav {
   animation: pwIn 0.5s ease calc(var(--d) + 0.35s) both;
 }
-.pw-logo-cur {
-  width: max(3.2%, 2px);
-}
-
 /* ---- Mise en scène de la page (mêmes décalages que l'original) ---- */
 .intro-live .pw-logo {
   animation: pwWipe 0.9s steps(24, end) calc(var(--d) + 0.1s) both;
-}
-.pw-anim .pw-logo svg {
-  animation: none;
-}
-.intro-live .pw-logo-cur {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3.2%;
-  height: 100%;
-  background: #b00020;
-  opacity: 0;
-  animation: pwCur 1s steps(24, end) calc(var(--d) + 0.1s) both;
 }
 .intro-live .pw-rule {
   transform-origin: left;
@@ -704,6 +824,6 @@ html[dir="rtl"] .intro-live .pw-fig-wipe {
 @media (prefers-contrast: more) {
   .card-paper,
   .chip {
-    border-color: rgba(0, 0, 0, 0.6);
+    border-color: rgb(var(--c-ink) / 0.6);
   }
 }

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Terminal } from "lucide-react"
-import { useLang } from "../../i18n/LanguageContext"
 
 /**
  * A small "live" console. Lines cycle on their own, the way a build log
  * would, so the hero feels alive without any interaction.
+ *
+ * Le terminal est volontairement indépendant de l'i18n du site : son
+ * contenu est toujours en français, quelle que soit la langue affichée.
  */
 const ConsoleWidget = ({ lines, className = "" }) => {
-  const { t, isRTL } = useLang()
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -21,19 +22,19 @@ const ConsoleWidget = ({ lines, className = "" }) => {
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border border-black/10 bg-[#0E0F12] text-white shadow-[0_28px_60px_-40px_rgba(0,0,0,0.8)] ${className}`}
+      className={`overflow-hidden rounded-2xl border border-hairstrong bg-terminal text-white shadow-lift ring-1 ring-white/10 ${className}`}
     >
       <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2.5">
-        <Terminal className="h-3.5 w-3.5 text-white/40" />
-        <span className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-white/40">
-          {t("consoleLabel")}
+        <Terminal className="h-3.5 w-3.5 text-white/60" />
+        <span className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-white/60">
+          terminal
         </span>
         <span className="ms-auto flex gap-1">
           {lines.map((_, i) => (
             <span
               key={i}
               className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${
-                i === index ? "bg-crimson" : "bg-white/20"
+                i === index ? "bg-crimson" : "bg-white/30"
               }`}
             />
           ))}
@@ -51,17 +52,14 @@ const ConsoleWidget = ({ lines, className = "" }) => {
             className="space-y-1.5 text-start"
           >
             {lines[index].map((line, i) => {
-              /* Les commandes restent en LTR (c'est un terminal) ; la sortie
-                 arabe suit le sens de lecture de la page. */
-              const isCommand = line.trim().startsWith("$")
-              const prompt = isCommand ? "\u25b8 " : isRTL ? "\u25c2 " : "\u25b8 "
+              /* Un terminal se lit toujours en LTR, commandes comme sortie. */
               return (
                 <p
                   key={i}
-                  dir={isCommand ? "ltr" : undefined}
-                  className="text-start font-mono text-[11px] leading-relaxed text-white/70"
+                  dir="ltr"
+                  className="text-start font-mono text-[11px] leading-relaxed text-white/85"
                 >
-                  <span className="text-crimson">{prompt}</span>
+                  <span className="text-crimson">{"\u25b8 "}</span>
                   {line}
                 </p>
               )

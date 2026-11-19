@@ -4,9 +4,9 @@
  */
 export const UI = {
   fr: {
-    langSwitch: "ع",
     langSwitchLabel: "Passer en arabe",
     langSwitchAria: "Changer de langue",
+    themeSwitchLabel: "Basculer entre thème sombre et clair",
 
     /* Hero */
     heroLede:
@@ -63,6 +63,9 @@ export const UI = {
     projectsLede:
       "Deux projets qui portent l'identité, puis le reste des systèmes livrés — du back-office e-commerce à la gestion médicale.",
     projectRepo: "Voir le dépôt",
+    projectsMoreNote:
+      "Une sélection de projets — le reste, expérimentations comprises, vit sur GitHub.",
+    projectsGithubCta: "Tout voir sur GitHub",
     projectDemo: "Démo en ligne",
     projectSystem: "Système",
     projectAll: "Tous",
@@ -124,8 +127,6 @@ export const UI = {
     contactPressFoot: "ou écrivez sur les réseaux — réponse sous 24 h.",
 
     /* Footer */
-    footerSupport: "Soutenir le travail",
-    footerSupportSubject: "Soutenir le travail",
     footerWatermark: "créer.",
     footerTagline: "Pas de templates. Du code propre.",
     footerDesc:
@@ -147,9 +148,9 @@ export const UI = {
   },
 
   ar: {
-    langSwitch: "FR",
     langSwitchLabel: "التحويل إلى الفرنسية",
     langSwitchAria: "تغيير اللغة",
+    themeSwitchLabel: "التبديل بين المظهر الداكن والفاتح",
 
     /* Hero */
     heroLede:
@@ -206,6 +207,9 @@ export const UI = {
     projectsLede:
       "مشروعان يحملان الهوية، ثم بقية الأنظمة المسلّمة — من لوحة إدارة المتجر الإلكتروني إلى تدبير الاستشارات الطبية.",
     projectRepo: "عرض المستودع",
+    projectsMoreNote:
+      "هذه مشاريع مختارة — بقية المشاريع والتجارب موجودة على GitHub.",
+    projectsGithubCta: "عرض الكل على GitHub",
     projectDemo: "نسخة حية",
     projectSystem: "نظام",
     projectAll: "الكل",
@@ -267,8 +271,6 @@ export const UI = {
     contactPressFoot: "أو راسلني على الشبكات — الردّ في أقل من ٢٤ ساعة.",
 
     /* Footer */
-    footerSupport: "ادعم العمل",
-    footerSupportSubject: "دعم العمل",
     footerWatermark: "أنشئ.",
     footerTagline: "لا قوالب جاهزة. كود نظيف.",
     footerDesc:

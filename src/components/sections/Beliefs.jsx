@@ -13,7 +13,7 @@ const Beliefs = () => {
   const { t, isRTL } = useLang()
 
   return (
-  <section id="about" className="scroll-mt-20 border-y border-hair bg-white/40 py-24 sm:py-28 lg:py-32">
+  <section id="about" className="scroll-mt-20 border-y border-hair bg-surface/40 py-24 sm:py-28 lg:py-32">
     <div className="shell grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
       {/* Left — sticky label */}
       <div className="lg:sticky lg:top-16 lg:self-start">
@@ -32,7 +32,7 @@ const Beliefs = () => {
       <div>
         {beliefs.map((belief, index) => (
           <Reveal key={belief} delay={index * 0.05}>
-            <div className="group flex items-start gap-5 border-b border-hair py-6 transition-colors duration-300 first:border-t hover:bg-black/[0.015] sm:gap-7 sm:py-7">
+            <div className="group flex items-start gap-5 border-b border-hair py-6 transition-colors duration-300 first:border-t hover:bg-ink/[0.03] sm:gap-7 sm:py-7">
               <span className="mt-0.5 w-6 shrink-0 font-serif text-base italic text-crimson">
                 {ROMAN[index]}
               </span>

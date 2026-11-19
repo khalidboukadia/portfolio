@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
 import PixelLogo from "./PixelLogo"
-import { useLang } from "../../i18n/LanguageContext"
 
 /**
  * Ouverture du site — **copie à l'identique** de makousb.com.
@@ -25,10 +24,19 @@ import { useLang } from "../../i18n/LanguageContext"
  * même décalage `--d: 1.65s` que sur le site d'origine.
  */
 const Preloader = ({ onDone }) => {
-  const { lang } = useLang()
   const [visible, setVisible] = useState(true)
-  // En arabe, le mot-symbole pixel reste le monogramme « M » seul.
-  const compact = lang === "ar"
+  // Sur mobile, le mot-symbole pixel se réduit au monogramme « M » seul ;
+  // sur écran large, le nom complet s'affiche.
+  const [compact, setCompact] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches
+  )
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)")
+    const onChange = (e) => setCompact(e.matches)
+    mq.addEventListener("change", onChange)
+    return () => mq.removeEventListener("change", onChange)
+  }, [])
   const doneRef = useRef(false)
 
   const finish = () => {

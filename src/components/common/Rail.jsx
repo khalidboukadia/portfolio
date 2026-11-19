@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { FiGithub, FiLinkedin } from "react-icons/fi"
-import { Mail, Menu, X } from "lucide-react"
-import Monogram from "./Monogram"
+import { Languages, Mail, Menu, Moon, Sun, X } from "lucide-react"
 import { useData, useLang } from "../../i18n/LanguageContext"
 import { scrollToElement } from "../../utils/helpers"
 import { spring } from "../../lib/motion"
@@ -12,9 +11,9 @@ import { spring } from "../../lib/motion"
  * strip of icons, the way the reference site does it. Below `lg` the rail
  * is replaced by a compact top bar and a bottom sheet.
  */
-const Rail = () => {
+const Rail = ({ theme, onToggleTheme }) => {
   const { navLinks, personalInfo } = useData()
-  const { t, toggle, lang } = useLang()
+  const { t, toggle } = useLang()
   const [active, setActive] = useState("hero")
   const [open, setOpen] = useState(false)
   // Le bandeau mobile se condense dès qu'on descend : au sommet il flotte
@@ -69,19 +68,19 @@ const Rail = () => {
     <>
       {/* ---------- Desktop rail ---------- */}
       <aside className="fixed inset-y-0 start-0 z-50 hidden w-[68px] flex-col items-center border-e border-hair bg-paper/90 backdrop-blur-md lg:flex">
-        {/* Monogram */}
+        {/* Logo — variante selon le thème */}
         <button
           type="button"
           onClick={() => go("#hero")}
           aria-label={t("ariaBackTop")}
-          className="mt-5 flex h-11 w-11 items-center justify-center rounded-2xl border border-hair bg-white text-ink transition-colors duration-300 hover:border-crimson hover:text-crimson"
+          className="mt-5 flex h-11 w-11 items-center justify-center text-ink transition-opacity duration-300 hover:opacity-75"
         >
-          <span className="relative inline-flex">
-            <span className="pw-logo inline-flex">
-              <Monogram size={19} />
-            </span>
-            <i className="pw-logo-cur" />
-          </span>
+          <img
+            src={theme === "dark" ? "/favicon-dark.png?v=2" : "/favicon-light.png?v=2"}
+            alt=""
+            className="pw-logo h-8 w-8 object-contain"
+            draggable="false"
+          />
         </button>
 
         {/* Section anchors */}
@@ -102,7 +101,7 @@ const Rail = () => {
               >
                 <Icon className="h-[18px] w-[18px]" />
                 {/* Tooltip */}
-                <span className="pointer-events-none absolute start-full z-50 ms-3 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                <span className="pointer-events-none absolute start-full z-50 ms-3 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-medium text-paper opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
                   {link.name}
                 </span>
               </button>
@@ -110,16 +109,33 @@ const Rail = () => {
           })}
         </nav>
 
+        {/* Bascule de thème */}
+        <button
+          type="button"
+          data-drip-theme
+          aria-pressed={theme === "dark"}
+          onClick={onToggleTheme}
+          aria-label={t("themeSwitchLabel")}
+          className="group relative mb-2 flex h-9 w-9 items-center justify-center rounded-xl border border-hair bg-surface text-ink transition-colors duration-300 hover:border-crimson hover:text-crimson"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <span className="pointer-events-none absolute start-full z-50 ms-3 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-medium text-paper opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+            {t("themeSwitchLabel")}
+          </span>
+        </button>
+
         {/* Bascule de langue */}
         <button
           type="button"
           data-drip-link
           onClick={toggle}
           aria-label={t("langSwitchLabel")}
-          title={t("langSwitchLabel")}
-          className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl border border-hair bg-white font-mono text-[11px] font-semibold text-ink transition-colors duration-300 hover:border-crimson hover:text-crimson"
+          className="group relative mb-4 flex h-9 w-9 items-center justify-center rounded-xl border border-hair bg-surface text-ink transition-colors duration-300 hover:border-crimson hover:text-crimson"
         >
-          {t("langSwitch")}
+          <Languages className="h-[18px] w-[18px]" />
+          <span className="pointer-events-none absolute start-full z-50 ms-3 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 text-[11px] font-medium text-paper opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+            {t("langSwitchLabel")}
+          </span>
         </button>
 
         {/* Socials — carrés pleins, comme les boutons de la barre makousb */}
@@ -131,7 +147,7 @@ const Rail = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={s.label}
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-white transition-colors duration-200 hover:bg-crimson"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-paper transition-colors duration-200 hover:bg-crimson"
             >
               {s.icon}
             </a>
@@ -145,7 +161,7 @@ const Rail = () => {
       <header
         className={`sticky top-0 z-50 flex items-center justify-between gap-3 px-4 transition-[padding,background-color,box-shadow] duration-300 lg:hidden ${
           condensed
-            ? "border-b border-hair bg-paper/95 py-2 shadow-[0_14px_30px_-26px_rgba(0,0,0,0.55)] backdrop-blur-md"
+            ? "border-b border-hair bg-paper/95 py-2 shadow-pill backdrop-blur-md"
             : "border-b border-transparent bg-transparent pt-3"
         }`}
       >
@@ -154,13 +170,15 @@ const Rail = () => {
           onClick={() => setOpen(true)}
           aria-label={t("ariaOpenMenu")}
           aria-expanded={open}
-          className="group flex items-center gap-2.5 rounded-full border border-hair bg-white/95 py-1.5 ps-1.5 pe-4 shadow-[0_12px_30px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
+          className="group flex items-center gap-2.5 rounded-full border border-hair bg-surface/95 py-1.5 ps-1.5 pe-4 shadow-pill backdrop-blur-md"
         >
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-hair bg-paper text-ink">
-            <span className="pw-logo inline-flex">
-              <Monogram size={14} />
-            </span>
-            <i className="pw-logo-cur" />
+          <span className="relative flex h-8 w-8 items-center justify-center text-ink">
+            <img
+              src={theme === "dark" ? "/favicon-dark.png?v=2" : "/favicon-light.png?v=2"}
+              alt=""
+              className="pw-logo h-full w-full object-contain p-0.5"
+              draggable="false"
+            />
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink">
             {t("menuLabel")}
@@ -168,16 +186,28 @@ const Rail = () => {
           <Menu className="h-3.5 w-3.5 text-ink-mute" />
         </button>
 
-        <button
-          type="button"
-          data-drip-link
-          onClick={toggle}
-          aria-label={t("langSwitchLabel")}
-          title={t("langSwitchLabel")}
-          className="flex h-9 items-center justify-center rounded-full border border-hair bg-white/95 px-3 font-mono text-[10px] font-semibold text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
-        >
-          {t("langSwitch")}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            data-drip-theme
+            aria-pressed={theme === "dark"}
+            onClick={onToggleTheme}
+            aria-label={t("themeSwitchLabel")}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-hair bg-surface/95 text-ink shadow-pill backdrop-blur-md"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+
+          <button
+            type="button"
+            data-drip-link
+            onClick={toggle}
+            aria-label={t("langSwitchLabel")}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-hair bg-surface/95 text-ink shadow-pill backdrop-blur-md"
+          >
+            <Languages className="h-[18px] w-[18px]" />
+          </button>
+        </div>
       </header>
 
       {/* ---------- Mobile sheet ---------- */}
@@ -201,14 +231,14 @@ const Rail = () => {
               transition={spring.momentum}
               className="fixed inset-x-0 bottom-0 z-[60] rounded-t-3xl border-t border-hair bg-paper p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:hidden"
             >
-              <div className="mx-auto mb-5 h-1.5 w-10 rounded-full bg-black/10" />
+              <div className="mx-auto mb-5 h-1.5 w-10 rounded-full bg-ink/10" />
               <div className="space-y-1">
                 {navLinks.map((link) => (
                   <button
                     key={link.name}
                     type="button"
                     onClick={() => go(link.href)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3.5 text-left text-lg font-medium text-ink transition-colors hover:bg-black/5"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3.5 text-left text-lg font-medium text-ink transition-colors hover:bg-ink/5"
                   >
                     <link.icon className="h-[18px] w-[18px] text-ink-mute" />
                     {link.name}
@@ -223,7 +253,7 @@ const Rail = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-hair bg-white text-ink-mute"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-hair bg-surface text-ink-mute"
                   >
                     {s.icon}
                   </a>
@@ -233,7 +263,7 @@ const Rail = () => {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("ariaCloseMenu")}
-                className="absolute end-5 top-5 flex h-9 w-9 items-center justify-center rounded-xl border border-hair bg-white"
+                className="absolute end-5 top-5 flex h-9 w-9 items-center justify-center rounded-xl border border-hair bg-surface"
               >
                 <X className="h-4 w-4" />
               </button>
